@@ -365,17 +365,25 @@ export default function App() {
               className="space-y-8"
             >
               <section className="bg-slate-800 rounded-2xl p-8 shadow-lg relative overflow-hidden border-none">
-                <div className="absolute top-0 right-0 p-8 opacity-10 pointer-events-none text-white">
-                  <Settings size={120} />
-                </div>
-                <div className="relative z-10 max-w-2xl">
-                  <h2 className="text-2xl font-extrabold text-white mb-4 tracking-tight font-montserrat"><span className="text-5xl block mb-3 leading-tight">Animal Clima Project</span>Progettare Benessere Animale</h2>
-                  <p className="text-slate-200 leading-relaxed text-lg">
-                    Seleziona il primo modulo per iniziare la progettazione climatica e ambientale della struttura.
-                  </p>
-                </div>
-              </section>
-
+  <div className="absolute top-0 right-0 p-8 opacity-10 pointer-events-none text-white">
+    <Settings size={120} />
+  </div>
+  <div className="relative z-10 max-w-2xl">
+    <h2 className="font-extrabold text-white mb-4 tracking-tight font-montserrat">
+      {/* Titolo Principale in Bianco */}
+      <span className="text-5xl block mb-2 leading-tight">
+        Animal Clima Project
+      </span>
+      {/* Sottotitolo in Verde Emerald */}
+      <span className="text-2xl text-emerald-500 block font-bold">
+        Progettare Benessere Animale
+      </span>
+    </h2>
+    <p className="text-slate-200 leading-relaxed text-lg">
+      Seleziona il primo modulo per iniziare la progettazione climatica e ambientale della struttura.
+    </p>
+  </div>
+</section>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <ModuleCard 
                   title="1. Configurazione Animali"
