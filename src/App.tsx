@@ -369,7 +369,7 @@ export default function App() {
                   <Settings size={120} />
                 </div>
                 <div className="relative z-10 max-w-2xl">
-                  <h2 className="text-3xl font-extrabold text-white mb-5 tracking-tight font-montserrat">Animal Clima Project - Progettare Benessere Animale</h2>
+                  <h2 className="text-2xl font-extrabold text-white mb-4 tracking-tight font-montserrat"><span className="text-4xl block mb-2">Animal Clima Project - Progettare Benessere Animale</h2>
                   <p className="text-slate-200 leading-relaxed text-lg">
                     Seleziona il primo modulo per iniziare la progettazione climatica e ambientale della struttura.
                   </p>
