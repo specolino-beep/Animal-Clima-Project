@@ -1,15 +1,4 @@
-export interface AnimalEntry {
-  name: string;
-  weight: number; // Nominal weight in kg
-  qtEstate: number;
-  qtInverno: number;
-  h2oEstate: number;
-  h2oInverno: number;
-  qsEstate: number;
-  qsInverno: number;
-  co2: number;
-  vEstate: number;
-}
+import { AnimalEntry } from '../types';
 
 export const ANIMAL_DATABASE: AnimalEntry[] = [
   { name: "Vacche da latte (500 kg, 10 kg latte/g)", weight: 500, qtEstate: 820, qtInverno: 890, h2oEstate: 815, h2oInverno: 300, qsEstate: 270, qsInverno: 685, co2: 145, vEstate: 319 },

@@ -1,10 +1,4 @@
-export interface MaterialEntry {
-  name: string;
-  category: string;
-  lambda?: number; // W/m*K
-  rho?: number;    // kg/m3
-  rValue?: number; // m2*K/W
-}
+import { MaterialEntry } from '../types';
 
 export const MATERIAL_DATABASE: MaterialEntry[] = [
   // PARETI

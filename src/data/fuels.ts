@@ -1,9 +1,4 @@
-export interface FuelEntry {
-  name: string;
-  kjPerKg: number;
-  kwhPerKg: number;
-  efficiency: number;
-}
+import { FuelEntry } from '../types';
 
 export const FUELS_DATABASE: FuelEntry[] = [
   { name: "Legno", kjPerKg: 16000, kwhPerKg: 4.444444, efficiency: 0.75 },
