@@ -364,12 +364,12 @@ export default function App() {
               exit={{ opacity: 0, y: -20 }}
               className="space-y-8"
             >
-              <section className="bg-slate-600 rounded-2xl p-8 shadow-lg relative overflow-hidden border-none">
+              <section className="bg-slate-800 rounded-2xl p-8 shadow-lg relative overflow-hidden border-none">
                 <div className="absolute top-0 right-0 p-8 opacity-10 pointer-events-none text-white">
                   <Settings size={120} />
                 </div>
                 <div className="relative z-10 max-w-2xl">
-                  <h2 className="text-3xl font-extrabold text-white mb-4 tracking-tight font-montserrat">Animal Clima Project - Progettare Benessere Animale</h2>
+                  <h2 className="text-3xl font-extrabold text-white mb-5 tracking-tight font-montserrat">Animal Clima Project - Progettare Benessere Animale</h2>
                   <p className="text-slate-200 leading-relaxed text-lg">
                     Seleziona il primo modulo per iniziare la progettazione climatica e ambientale della struttura.
                   </p>
