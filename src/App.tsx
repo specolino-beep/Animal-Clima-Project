@@ -369,52 +369,52 @@ export default function App() {
                   <Settings size={120} />
                 </div>
                 <div className="relative z-10 max-w-2xl">
-                  <h2 className="text-3xl font-extrabold text-white mb-4 tracking-tight font-montserrat">Benvenuto in Animal Clima Project</h2>
+                  <h2 className="text-3xl font-extrabold text-white mb-4 tracking-tight font-montserrat">Animal Clima Project - Progettare Benessere Animale</h2>
                   <p className="text-slate-200 leading-relaxed text-lg">
-                    Seleziona un modulo per iniziare la progettazione climatica e ambientale del tuo impianto zootecnico.
+                    Seleziona il primo modulo per iniziare la progettazione climatica e ambientale della struttura.
                   </p>
                 </div>
               </section>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <ModuleCard 
-                  title="Configurazione Animali"
+                  title="1. Configurazione Animali"
                   description="Definisci la categoria animale e il numero di capi per calcolare i parametri di emissione e calore."
                   icon={<Activity className="text-emerald-600" size={32} />}
                   onClick={() => setCurrentView('animals')}
                 />
                 <ModuleCard 
-                  title="Parametri Climatici"
+                  title="2. Parametri Climatici"
                   description="Imposta le condizioni termiche e igrometriche esterne per il calcolo dell'umidità specifica."
                   icon={<Thermometer className="text-emerald-600" size={32} />}
                   onClick={() => setCurrentView('climate')}
                 />
                 <ModuleCard 
-                  title="Struttura Edilizia"
+                  title="3. Struttura Edilizia, Materiali e Caratteristiche Termiche"
                   description="Configura i materiali e le superfici dell'edificio per calcolare la trasmittanza termica media."
                   icon={<Building2 className="text-emerald-600" size={32} />}
                   onClick={() => setCurrentView('structure')}
                 />
                 <ModuleCard 
-                  title="Ventilazione Minima"
+                  title="4. Ventilazione per Ricambio dell'Aria"
                   description="Calcola la portata d'aria necessaria per il controllo della CO2 e dell'umidità interna."
                   icon={<Wind className="text-emerald-600" size={32} />}
                   onClick={() => setCurrentView('ventilation')}
                 />
                 <ModuleCard 
-                  title="Bilancio Termico Invernale"
+                  title="5. Bilancio Termico Invernale"
                   description="Verifica il bilancio energetico tra calore prodotto dagli animali e dispersioni totali."
                   icon={<Calculator className="text-emerald-600" size={32} />}
                   onClick={() => setCurrentView('results')}
                 />
                 <ModuleCard 
-                  title="Ventilazione Naturale"
+                  title="6. Ventilazione Naturale"
                   description="Dimensiona le aperture d'uscita per l'effetto camino invernale."
                   icon={<Wind className="text-emerald-600" size={32} />}
                   onClick={() => setCurrentView('natural_vent')}
                 />
                 <ModuleCard 
-                  title="Ventilazione Forzata"
+                  title="7. Ventilazione Forzata"
                   description="Configura i ventilatori, calcola il numero necessario e i consumi energetici."
                   icon={<Wind className="text-emerald-600" size={32} />}
                   onClick={() => setCurrentView('forced_vent')}
@@ -546,8 +546,8 @@ export default function App() {
 
       <footer className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 border-t border-slate-200">
         <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-slate-400 text-xs font-medium uppercase tracking-widest">
-          <p>© 2024 Animal Clima Project • Design Suite</p>
-          <p>Sviluppato per la progettazione zootecnica avanzata</p>
+          <p>© 2026 Animal Clima Project • Design Suite</p>
+          <p>Developed: francesco.daborso@uniud.it</p>
         </div>
       </footer>
     </div>
