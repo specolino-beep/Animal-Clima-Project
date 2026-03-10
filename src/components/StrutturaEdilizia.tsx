@@ -52,7 +52,7 @@ export function StrutturaEdilizia({
       exit={{ opacity: 0, x: -20 }}
       className="space-y-8"
     >
-      <section className="bg-slate-600 rounded-2xl border border-slate-700 p-8 shadow-sm">
+      <section className="bg-slate-800 rounded-2xl border border-slate-700 p-8 shadow-sm">
         <h2 className="text-2xl font-extrabold text-white mb-2 font-montserrat">Struttura Edilizia</h2>
         <p className="text-emerald-300 font-medium">
           Definisci le dimensioni della struttura, le superfici disperdenti e la stratigrafia dei materiali per il calcolo della trasmittanza termica.
@@ -269,16 +269,10 @@ export function StrutturaEdilizia({
         </p>
       </div>
 
-      <div className="flex justify-between items-center pt-8">
-        <button 
-          onClick={() => setCurrentView('home')}
-          className="flex items-center gap-2 px-6 py-4 bg-slate-600 text-emerald-300 rounded-2xl font-bold hover:bg-slate-700 transition-all shadow-lg shadow-slate-200"
-        >
-          Torna alla Home
-        </button>
+      <div className="flex justify-end items-center pt-8">
         <button 
           onClick={() => setCurrentView('results')}
-          className="flex items-center gap-3 bg-slate-600 text-emerald-300 px-8 py-4 rounded-2xl font-bold hover:bg-slate-700 transition-all shadow-lg shadow-slate-200 group"
+          className="flex items-center gap-3 bg-emerald-600 text-white px-8 py-4 rounded-2xl font-bold hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-100 group"
         >
           Vai al calcolo del bilancio termico
           <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />

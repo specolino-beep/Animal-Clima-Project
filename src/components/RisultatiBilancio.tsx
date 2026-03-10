@@ -67,7 +67,7 @@ export function RisultatiBilancio({
       exit={{ opacity: 0, x: -20 }}
       className="space-y-8"
     >
-      <section className="bg-slate-600 rounded-2xl border border-slate-700 p-8 shadow-sm">
+      <section className="bg-slate-800 rounded-2xl border border-slate-700 p-8 shadow-sm">
         <h2 className="text-2xl font-extrabold text-white mb-2 font-montserrat">Bilancio Termico Invernale</h2>
         <p className="text-emerald-300 font-medium">
           Analisi del bilancio energetico tra il calore prodotto dagli animali e le dispersioni termiche totali.
@@ -307,25 +307,18 @@ export function RisultatiBilancio({
           </div>
         </section>
       )}
-      <div className="flex flex-col sm:flex-row justify-between items-center gap-4 pt-8 border-t border-slate-100">
-        <button 
-          onClick={() => setCurrentView('home')}
-          className="flex items-center gap-2 px-6 py-4 bg-slate-600 text-emerald-300 rounded-2xl font-bold hover:bg-slate-700 transition-all shadow-lg shadow-slate-200 order-last sm:order-first"
-        >
-          Torna alla Home
-        </button>
-        
+      <div className="flex flex-col sm:flex-row justify-end items-center gap-4 pt-8 border-t border-slate-100">
         <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
           <button 
             onClick={() => setCurrentView('natural_vent')}
-            className="flex items-center justify-center gap-2 px-6 py-4 bg-slate-600 text-emerald-300 rounded-2xl font-bold hover:bg-slate-700 transition-all shadow-lg shadow-slate-200"
+            className="flex items-center justify-center gap-2 px-6 py-4 bg-emerald-600 text-white rounded-2xl font-bold hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-100"
           >
             <Wind size={20} />
             Ventilazione Naturale
           </button>
           <button 
             onClick={() => setCurrentView('forced_vent')}
-            className="flex items-center justify-center gap-2 px-6 py-4 bg-slate-600 text-emerald-300 rounded-2xl font-bold hover:bg-slate-700 transition-all shadow-lg shadow-slate-200"
+            className="flex items-center justify-center gap-2 px-6 py-4 bg-emerald-600 text-white rounded-2xl font-bold hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-100"
           >
             <Zap size={20} />
             Ventilazione Forzata

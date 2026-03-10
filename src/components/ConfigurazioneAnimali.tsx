@@ -45,7 +45,7 @@ export function ConfigurazioneAnimali({
       exit={{ opacity: 0, x: -20 }}
       className="space-y-8"
     >
-      <section className="bg-slate-600 rounded-2xl border border-slate-700 p-8 shadow-sm">
+      <section className="bg-slate-800 rounded-2xl border border-slate-700 p-8 shadow-sm">
         <h2 className="text-2xl font-extrabold text-white mb-2 font-montserrat">Configurazione Animali</h2>
         <p className="text-emerald-300 font-medium">Gestisci i dati della mandria per calcolare i parametri ambientali.</p>
       </section>
@@ -112,21 +112,15 @@ export function ConfigurazioneAnimali({
         </div>
       </section>
 
-      <div className="flex justify-between items-center pt-8">
-        <button 
-          onClick={() => setCurrentView('home')}
-          className="flex items-center gap-2 px-6 py-4 bg-slate-600 text-emerald-300 rounded-2xl font-bold hover:bg-slate-700 transition-all shadow-lg shadow-slate-200"
-        >
-          Torna alla Home
-        </button>
-        <button 
-          onClick={() => setCurrentView('climate')}
-          className="flex items-center gap-3 bg-slate-600 text-emerald-300 px-8 py-4 rounded-2xl font-bold hover:bg-slate-700 transition-all shadow-lg shadow-slate-200 group"
-        >
-          Vai all'inserimento dei dati climatici
-          <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
-        </button>
-      </div>
+     <div className="flex justify-end items-center pt-5">
+  <button 
+    onClick={() => setCurrentView('climate')}
+    className="flex items-center gap-1.5 bg-emerald-600 text-white px-5 py-2.5 rounded-xl font-semibold hover:bg-emerald-700 transition-colors text-sm group"
+  >
+    Vai all'inserimento dei dati climatici
+    <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+  </button>
+</div>
     </motion.div>
   );
 }

@@ -31,6 +31,46 @@ interface ParametriClimaticiProps {
   setCurrentView: (view: View) => void;
 }
 
+interface NumericInputProps {
+  value: number;
+  onChange: (v: number) => void;
+  className?: string;
+}
+
+function NumericInput({ value, onChange, className }: NumericInputProps) {
+  const [localValue, setLocalValue] = React.useState<string>(value?.toString() ?? '');
+
+  React.useEffect(() => {
+    if (value !== undefined && Number(localValue) !== value) {
+      setLocalValue(value.toString());
+    }
+  }, [value]);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    setLocalValue(val);
+    
+    if (val === '') {
+      onChange(0);
+    } else if (val !== '-' && val !== '.' && val !== '-.') {
+      const num = Number(val);
+      if (!isNaN(num)) {
+        onChange(num);
+      }
+    }
+  };
+
+  return (
+    <input
+      type="text"
+      inputMode="decimal"
+      value={localValue}
+      onChange={handleInputChange}
+      className={className}
+    />
+  );
+}
+
 export function ParametriClimatici({
   winterTemp,
   setWinterTemp,
@@ -57,7 +97,7 @@ export function ParametriClimatici({
       exit={{ opacity: 0, x: -20 }}
       className="space-y-8"
     >
-      <section className="bg-slate-600 rounded-2xl border border-slate-700 p-8 shadow-sm">
+      <section className="bg-slate-800 rounded-2xl border border-slate-700 p-8 shadow-sm">
         <h2 className="text-2xl font-extrabold text-white mb-2 font-montserrat">Parametri Climatici</h2>
         <p className="text-emerald-300 font-medium">
           Configurazione delle condizioni ambientali esterne per il calcolo dell'umidità specifica.
@@ -79,10 +119,9 @@ export function ParametriClimatici({
               label="T°C Inverno" 
               icon={<Thermometer size={16} />}
               content={
-                <input
-                  type="number"
+                <NumericInput
                   value={winterTemp}
-                  onChange={(e) => setWinterTemp(Number(e.target.value))}
+                  onChange={setWinterTemp}
                   className="w-full bg-white border border-slate-200 rounded-xl p-3.5 focus:outline-none focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 transition-all text-sm font-medium"
                 />
               }
@@ -91,12 +130,9 @@ export function ParametriClimatici({
               label="UR% Inverno" 
               icon={<Droplets size={16} />}
               content={
-                <input
-                  type="number"
-                  min="0"
-                  max="100"
+                <NumericInput
                   value={winterRH}
-                  onChange={(e) => setWinterRH(Number(e.target.value))}
+                  onChange={setWinterRH}
                   className="w-full bg-white border border-slate-200 rounded-xl p-3.5 focus:outline-none focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 transition-all text-sm font-medium"
                 />
               }
@@ -124,10 +160,9 @@ export function ParametriClimatici({
               label="T°C Estate" 
               icon={<Thermometer size={16} />}
               content={
-                <input
-                  type="number"
+                <NumericInput
                   value={summerTemp}
-                  onChange={(e) => setSummerTemp(Number(e.target.value))}
+                  onChange={setSummerTemp}
                   className="w-full bg-white border border-slate-200 rounded-xl p-3.5 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all text-sm font-medium"
                 />
               }
@@ -136,12 +171,9 @@ export function ParametriClimatici({
               label="UR% Estate" 
               icon={<Droplets size={16} />}
               content={
-                <input
-                  type="number"
-                  min="0"
-                  max="100"
+                <NumericInput
                   value={summerRH}
-                  onChange={(e) => setSummerRH(Number(e.target.value))}
+                  onChange={setSummerRH}
                   className="w-full bg-white border border-slate-200 rounded-xl p-3.5 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all text-sm font-medium"
                 />
               }
@@ -169,10 +201,9 @@ export function ParametriClimatici({
               label="T°C Interna" 
               icon={<Thermometer size={16} />}
               content={
-                <input
-                  type="number"
+                <NumericInput
                   value={indoorTemp}
-                  onChange={(e) => setIndoorTemp(Number(e.target.value))}
+                  onChange={setIndoorTemp}
                   className="w-full bg-white border border-slate-200 rounded-xl p-3.5 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all text-sm font-medium"
                 />
               }
@@ -181,12 +212,9 @@ export function ParametriClimatici({
               label="UR% Interna" 
               icon={<Droplets size={16} />}
               content={
-                <input
-                  type="number"
-                  min="0"
-                  max="100"
+                <NumericInput
                   value={indoorRH}
-                  onChange={(e) => setIndoorRH(Number(e.target.value))}
+                  onChange={setIndoorRH}
                   className="w-full bg-white border border-slate-200 rounded-xl p-3.5 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all text-sm font-medium"
                 />
               }
@@ -201,21 +229,15 @@ export function ParametriClimatici({
         </div>
       </div>
 
-      <div className="flex justify-between items-center pt-8">
-        <button 
-          onClick={() => setCurrentView('home')}
-          className="flex items-center gap-2 px-6 py-4 bg-slate-600 text-emerald-300 rounded-2xl font-bold hover:bg-slate-700 transition-all shadow-lg shadow-slate-200"
-        >
-          Torna alla Home
-        </button>
-        <button 
-          onClick={() => setCurrentView('structure')}
-          className="flex items-center gap-3 bg-slate-600 text-emerald-300 px-8 py-4 rounded-2xl font-bold hover:bg-slate-700 transition-all shadow-lg shadow-slate-200 group"
-        >
-          Vai alla configurazione della struttura
-          <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
-        </button>
-      </div>
+      <div className="flex justify-end items-center pt-6">
+  <button 
+    onClick={() => setCurrentView('structure')}
+    className="flex items-center gap-1.5 bg-emerald-600 text-white px-5 py-2.5 rounded-xl font-semibold hover:bg-emerald-700 transition-colors text-sm shadow-sm group"
+  >
+    Vai alla configurazione della struttura
+    <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+  </button>
+</div>
     </motion.div>
   );
 }

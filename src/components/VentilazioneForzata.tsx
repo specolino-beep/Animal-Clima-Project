@@ -116,7 +116,7 @@ export function VentilazioneForzata({
       exit={{ opacity: 0, x: -20 }}
       className="space-y-8"
     >
-      <section className="bg-slate-600 rounded-2xl border border-slate-700 p-8 shadow-sm">
+      <section className="bg-slate-800 rounded-2xl border border-slate-700 p-8 shadow-sm">
         <h2 className="text-2xl font-extrabold text-white mb-2 font-montserrat">Ventilazione Forzata</h2>
         <p className="text-emerald-300 font-medium">Dimensionamento ventilatori e calcolo consumi</p>
       </section>
@@ -352,14 +352,7 @@ export function VentilazioneForzata({
           </div>
         </div>
       </div>
-      <div className="flex justify-start pt-8">
-        <button 
-          onClick={() => setCurrentView('home')}
-          className="flex items-center gap-2 px-6 py-4 bg-slate-600 text-emerald-300 rounded-2xl font-bold hover:bg-slate-700 transition-all shadow-lg shadow-slate-200"
-        >
-          Torna alla Home
-        </button>
-      </div>
+
     </motion.div>
   );
 }

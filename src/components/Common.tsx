@@ -36,6 +36,28 @@ interface InputCardProps {
 }
 
 export function InputCard({ label, icon, content, value, onChange, unit, description }: InputCardProps) {
+  const [localValue, setLocalValue] = React.useState<string>(value?.toString() ?? '');
+
+  React.useEffect(() => {
+    if (value !== undefined && Number(localValue) !== value) {
+      setLocalValue(value.toString());
+    }
+  }, [value]);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    setLocalValue(val);
+    
+    if (val === '') {
+      onChange?.(0);
+    } else if (val !== '-' && val !== '.' && val !== '-.') {
+      const num = Number(val);
+      if (!isNaN(num)) {
+        onChange?.(num);
+      }
+    }
+  };
+
   return (
     <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4 h-full flex flex-col">
       <div className="flex items-center gap-2 text-emerald-600 font-semibold text-sm tracking-wider">
@@ -47,9 +69,10 @@ export function InputCard({ label, icon, content, value, onChange, unit, descrip
           <div className="space-y-2">
             <div className="relative">
               <input
-                type="number"
-                value={value}
-                onChange={(e) => onChange?.(Number(e.target.value))}
+                type="text"
+                inputMode="decimal"
+                value={localValue}
+                onChange={handleInputChange}
                 className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3.5 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all text-sm font-medium pr-12"
               />
               {unit && <span className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs font-bold">{unit}</span>}
