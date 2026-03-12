@@ -33,25 +33,37 @@ interface InputCardProps {
   onChange?: (val: number) => void;
   unit?: string;
   description?: string;
+  readOnly?: boolean;
 }
 
-export function InputCard({ label, icon, content, value, onChange, unit, description }: InputCardProps) {
-  const [localValue, setLocalValue] = React.useState<string>(value?.toString() ?? '');
+export function InputCard({ label, icon, content, value, onChange, unit, description, readOnly }: InputCardProps) {
+  const [localValue, setLocalValue] = React.useState<string>(value?.toString().replace('.', ',') ?? '');
 
   React.useEffect(() => {
-    if (value !== undefined && Number(localValue) !== value) {
-      setLocalValue(value.toString());
+    if (value !== undefined) {
+      // Only update localValue if the numeric value actually changed
+      // to avoid interrupting the user while typing (e.g. typing "0,")
+      const currentNumeric = parseFloat(localValue.replace(',', '.'));
+      if (currentNumeric !== value) {
+        setLocalValue(value.toString().replace('.', ','));
+      }
     }
   }, [value]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (readOnly) return;
     const val = e.target.value;
+    
+    // Allow only numbers, one comma or dot, and minus sign
+    if (!/^-?\d*[.,]?\d*$/.test(val)) return;
+    
     setLocalValue(val);
     
-    if (val === '') {
+    const normalized = val.replace(',', '.');
+    if (normalized === '' || normalized === '-') {
       onChange?.(0);
-    } else if (val !== '-' && val !== '.' && val !== '-.') {
-      const num = Number(val);
+    } else if (normalized !== '.' && normalized !== '-.') {
+      const num = Number(normalized);
       if (!isNaN(num)) {
         onChange?.(num);
       }
@@ -59,7 +71,7 @@ export function InputCard({ label, icon, content, value, onChange, unit, descrip
   };
 
   return (
-    <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4 h-full flex flex-col">
+    <div className={`bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4 h-full flex flex-col ${readOnly ? 'opacity-80' : ''}`}>
       <div className="flex items-center gap-2 text-emerald-600 font-semibold text-sm tracking-wider">
         {icon}
         <span>{label}</span>
@@ -73,7 +85,8 @@ export function InputCard({ label, icon, content, value, onChange, unit, descrip
                 inputMode="decimal"
                 value={localValue}
                 onChange={handleInputChange}
-                className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3.5 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all text-sm font-medium pr-12"
+                readOnly={readOnly}
+                className={`w-full bg-slate-50 border border-slate-200 rounded-xl p-3.5 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all text-sm font-medium pr-12 ${readOnly ? 'cursor-not-allowed bg-slate-100' : ''}`}
               />
               {unit && <span className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs font-bold">{unit}</span>}
             </div>

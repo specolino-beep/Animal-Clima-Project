@@ -307,20 +307,20 @@ export function RisultatiBilancio({
           </div>
         </section>
       )}
-      <div className="flex flex-col sm:flex-row justify-end items-center gap-4 pt-8 border-t border-slate-100">
+      <div className="flex flex-col sm:flex-row justify-end items-center gap-4 pt-5 border-t border-slate-100">
         <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
           <button 
             onClick={() => setCurrentView('natural_vent')}
-            className="flex items-center justify-center gap-2 px-6 py-4 bg-emerald-600 text-white rounded-2xl font-bold hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-100"
+            className="flex items-center justify-center gap-1.5 px-5 py-2.5 bg-emerald-600 text-white rounded-xl font-semibold hover:bg-emerald-700 transition-colors text-sm"
           >
-            <Wind size={20} />
+            <Wind size={16} />
             Ventilazione Naturale
           </button>
           <button 
             onClick={() => setCurrentView('forced_vent')}
-            className="flex items-center justify-center gap-2 px-6 py-4 bg-emerald-600 text-white rounded-2xl font-bold hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-100"
+            className="flex items-center justify-center gap-1.5 px-5 py-2.5 bg-emerald-600 text-white rounded-xl font-semibold hover:bg-emerald-700 transition-colors text-sm"
           >
-            <Zap size={20} />
+            <Zap size={16} />
             Ventilazione Forzata
           </button>
         </div>

@@ -71,7 +71,20 @@ export interface BuildingDimensions {
   eaveHeight: number;
 }
 
-export type View = 'home' | 'animals' | 'climate' | 'ventilation' | 'structure' | 'results' | 'natural_vent' | 'forced_vent';
+export interface OpeningDimensions {
+  windows: {
+    length: number;
+    height: number;
+    count: number;
+  };
+  doors: {
+    width: number;
+    height: number;
+    count: number;
+  };
+}
+
+export type View = 'home' | 'animals' | 'climate' | 'ventilation' | 'structure' | 'results' | 'natural_vent' | 'forced_vent' | 'summary';
 
 export interface NaturalVentParams {
   hOut: number; // Altezza al colmo / uscita (m)

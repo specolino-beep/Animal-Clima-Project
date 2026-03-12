@@ -66,16 +66,16 @@ export function VentilazioneNaturale({
               <InputCard 
                 label="Quota Uscita (Hout)"
                 value={params.hOut}
-                onChange={(v) => setParams(p => ({ ...p, hOut: v }))}
+                readOnly
                 unit="m"
-                description="Altezza al colmo o quota massima camini."
+                description="Recuperata da Altezza al colmo."
               />
               <InputCard 
                 label="Quota Ingresso (Hin)"
                 value={params.hIn}
-                onChange={(v) => setParams(p => ({ ...p, hIn: v }))}
+                readOnly
                 unit="m"
-                description="Quota media delle finestrature laterali."
+                description="Calcolata: Altezza gronda - 1/2 Altezza finestre."
               />
             </div>
           </section>
@@ -114,9 +114,9 @@ export function VentilazioneNaturale({
                 <InputCard 
                   label="Lunghezza Edificio"
                   value={params.buildingLength}
-                  onChange={(v) => setParams(p => ({ ...p, buildingLength: v }))}
+                  readOnly
                   unit="m"
-                  description="Lunghezza totale della fessura del cupolino."
+                  description="Recuperata dalla Lunghezza totale della struttura."
                 />
               ) : (
                 <InputCard 

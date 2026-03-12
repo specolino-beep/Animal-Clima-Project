@@ -23,7 +23,7 @@ import {
   calculateRequiredInsulationThickness,
   calculateFuelConsumption
 } from './utils/calculations';
-import { View, BuildingElement, Layer, ForcedVentParams, BuildingDimensions } from './types';
+import { View, BuildingElement, Layer, ForcedVentParams, BuildingDimensions, OpeningDimensions } from './types';
 
 // Components
 import { ModuleCard } from './components/Common';
@@ -51,9 +51,9 @@ export default function App() {
   ];
 
   // Animal State
-  const [selectedAnimalName, setSelectedAnimalName] = useState<string>(ANIMAL_DATABASE[0].name);
-  const [numHeads, setNumHeads] = useState<number>(1);
-  const [avgWeight, setAvgWeight] = useState<number>(ANIMAL_DATABASE[0].weight);
+  const [selectedAnimalName, setSelectedAnimalName] = useState<string>("Suini da ingrasso (100 kg)");
+  const [numHeads, setNumHeads] = useState<number>(800);
+  const [avgWeight, setAvgWeight] = useState<number>(100);
 
   // Climate State
   const [winterTemp, setWinterTemp] = useState<number>(0);
@@ -70,12 +70,70 @@ export default function App() {
 
   // Building Structure State
   const [elements, setElements] = useState<BuildingElement[]>([
-    { id: 'walls', name: 'Pareti Laterali', surface: 0, layers: [], rSi: 0.13, rSe: 0.04 },
-    { id: 'heads', name: 'Testate', surface: 0, layers: [], rSi: 0.13, rSe: 0.04 },
-    { id: 'roof', name: 'Tetto', surface: 0, layers: [], rSi: 0.13, rSe: 0.04 },
-    { id: 'windows', name: 'Finestrature', surface: 0, layers: [], rSi: 0.13, rSe: 0.04 },
-    { id: 'doors', name: 'Aperture d\'accesso', surface: 0, layers: [], rSi: 0.13, rSe: 0.04 },
-    { id: 'floor', name: 'Pavimento', surface: 0, layers: [], rSi: 0.17, rSe: 0, rGround: 1, tGroundwater: 14 },
+    { 
+      id: 'walls', 
+      name: 'Pareti Laterali', 
+      surface: 0, 
+      layers: [
+        { id: 'wall-layer-1', materialName: 'Calcestruzzo normale', thickness: 0.2 }
+      ], 
+      rSi: 0.13, 
+      rSe: 0.04 
+    },
+    { 
+      id: 'heads', 
+      name: 'Testate', 
+      surface: 0, 
+      layers: [
+        { id: 'head-layer-1', materialName: 'Calcestruzzo normale', thickness: 0.2 }
+      ], 
+      rSi: 0.13, 
+      rSe: 0.04 
+    },
+    { 
+      id: 'roof', 
+      name: 'Tetto', 
+      surface: 0, 
+      layers: [
+        { id: 'roof-layer-1', materialName: 'Tavelloni 80 mm', thickness: 0.8 },
+        { id: 'roof-layer-2', materialName: 'Guaine di polietilene, bitume, ecc', thickness: 0.03 },
+        { id: 'roof-layer-3', materialName: 'Pannelli in fibrocemento', thickness: 0.08 }
+      ], 
+      rSi: 0.13, 
+      rSe: 0.04 
+    },
+    { 
+      id: 'windows', 
+      name: 'Finestre', 
+      surface: 0, 
+      layers: [
+        { id: 'window-layer-1', materialName: 'Policarbonato', thickness: 0.03 }
+      ], 
+      rSi: 0.13, 
+      rSe: 0.04 
+    },
+    { 
+      id: 'doors', 
+      name: 'Porte', 
+      surface: 0, 
+      layers: [
+        { id: 'door-layer-1', materialName: 'Pannelli autoportanti isolati (sandwich alluminio)', thickness: 0.4 }
+      ], 
+      rSi: 0.13, 
+      rSe: 0.04 
+    },
+    { 
+      id: 'floor', 
+      name: 'Pavimento', 
+      surface: 0, 
+      layers: [
+        { id: 'floor-layer-1', materialName: 'Calcestruzzo normale', thickness: 0.1 }
+      ], 
+      rSi: 0.17, 
+      rSe: 0, 
+      rGround: 1, 
+      tGroundwater: 14 
+    },
   ]);
 
   const fetchRealCO2 = async () => {
@@ -116,11 +174,54 @@ export default function App() {
 
   // Building Dimensions State
   const [buildingDimensions, setBuildingDimensions] = useState<BuildingDimensions>({
-    length: 50,
-    width: 20,
-    ridgeHeight: 6,
-    eaveHeight: 4
+    length: 62,
+    width: 16,
+    ridgeHeight: 5.5,
+    eaveHeight: 3.5
   });
+
+  // Opening Dimensions State
+  const [openingDimensions, setOpeningDimensions] = useState<OpeningDimensions>({
+    windows: { length: 60, height: 1, count: 2 },
+    doors: { width: 1, height: 3, count: 2 }
+  });
+
+  // Sync natural ventilation parameters
+  useEffect(() => {
+    setNaturalVentParams(prev => ({
+      ...prev,
+      hOut: buildingDimensions.ridgeHeight,
+      hIn: buildingDimensions.eaveHeight - (0.5 * openingDimensions.windows.height),
+      buildingLength: buildingDimensions.length
+    }));
+  }, [buildingDimensions.ridgeHeight, buildingDimensions.eaveHeight, buildingDimensions.length, openingDimensions.windows.height]);
+
+  // Sync surfaces of elements when dimensions change
+  useEffect(() => {
+    const windowSurface = openingDimensions.windows.length * openingDimensions.windows.height * openingDimensions.windows.count;
+    const doorSurface = openingDimensions.doors.width * openingDimensions.doors.height * openingDimensions.doors.count;
+    const floorSurface = buildingDimensions.length * buildingDimensions.width;
+    const wallsSurface = (buildingDimensions.length * buildingDimensions.eaveHeight * 2) - windowSurface;
+    
+    // Testate = (ridgeHeight + eaveHeight) * width - doorSurface
+    const headsSurface = ((buildingDimensions.ridgeHeight + buildingDimensions.eaveHeight) * buildingDimensions.width) - doorSurface;
+    
+    // Tetto = 2 * length * sqrt((width/2)^2 + (ridgeHeight - eaveHeight)^2)
+    const halfWidth = buildingDimensions.width / 2;
+    const heightDiff = buildingDimensions.ridgeHeight - buildingDimensions.eaveHeight;
+    const slopeLength = Math.sqrt(Math.pow(halfWidth, 2) + Math.pow(heightDiff, 2));
+    const roofSurface = 2 * buildingDimensions.length * slopeLength;
+    
+    setElements(prev => prev.map(el => {
+      if (el.id === 'windows') return { ...el, surface: windowSurface };
+      if (el.id === 'doors') return { ...el, surface: doorSurface };
+      if (el.id === 'floor') return { ...el, surface: floorSurface };
+      if (el.id === 'walls') return { ...el, surface: Math.max(0, wallsSurface) };
+      if (el.id === 'heads') return { ...el, surface: Math.max(0, headsSurface) };
+      if (el.id === 'roof') return { ...el, surface: roofSurface };
+      return el;
+    }));
+  }, [openingDimensions, buildingDimensions]);
 
   const selectedAnimal = useMemo(() => {
     return ANIMAL_DATABASE.find(a => a.name === selectedAnimalName) || ANIMAL_DATABASE[0];
@@ -498,6 +599,8 @@ export default function App() {
               setCurrentView={setCurrentView}
               dimensions={buildingDimensions}
               setDimensions={setBuildingDimensions}
+              openingDimensions={openingDimensions}
+              setOpeningDimensions={setOpeningDimensions}
             />
           )}
 

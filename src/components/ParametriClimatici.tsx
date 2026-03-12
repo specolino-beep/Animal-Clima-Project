@@ -109,7 +109,7 @@ export function ParametriClimatici({
         <div className="space-y-6">
           <div className="flex items-center gap-3 text-cyan-700">
             <Snowflake size={24} />
-            <h3 className="text-lg font-extrabold font-montserrat">Stagione Inverno</h3>
+            <h3 className="text-lg font-extrabold font-montserrat">Inverno</h3>
           </div>
           <div className="bg-cyan-50/50 p-4 rounded-xl border border-cyan-100 text-sm text-cyan-800 leading-relaxed italic">
             "In inverno dovranno essere immesse le condizioni climatiche rappresentative del periodo più freddo dell'anno (es. media delle minime del mese più freddo)."
@@ -141,47 +141,6 @@ export function ParametriClimatici({
               icon={<Wind className="text-cyan-700" size={18} />} 
               label="Umidità Specifica" 
               value={winterHumidity.toLocaleString('it-IT', { maximumFractionDigits: 2 })} 
-              unit="g/m³" 
-            />
-          </div>
-        </div>
-
-        {/* Summer Section */}
-        <div className="space-y-6">
-          <div className="flex items-center gap-3 text-amber-600">
-            <Sun size={24} />
-            <h3 className="text-lg font-extrabold font-montserrat">Stagione Estate</h3>
-          </div>
-          <div className="bg-amber-50/50 p-4 rounded-xl border border-amber-100 text-sm text-amber-800 leading-relaxed italic">
-            "In estate dovranno essere immesse le condizioni climatiche rappresentative del periodo più caldo dell'anno (es. media delle massime del mese più caldo)."
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <InputCard 
-              label="T°C Estate" 
-              icon={<Thermometer size={16} />}
-              content={
-                <NumericInput
-                  value={summerTemp}
-                  onChange={setSummerTemp}
-                  className="w-full bg-white border border-slate-200 rounded-xl p-3.5 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all text-sm font-medium"
-                />
-              }
-            />
-            <InputCard 
-              label="UR% Estate" 
-              icon={<Droplets size={16} />}
-              content={
-                <NumericInput
-                  value={summerRH}
-                  onChange={setSummerRH}
-                  className="w-full bg-white border border-slate-200 rounded-xl p-3.5 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all text-sm font-medium"
-                />
-              }
-            />
-            <ResultCard 
-              icon={<Wind className="text-amber-600" size={18} />} 
-              label="Umidità Specifica" 
-              value={summerHumidity.toLocaleString('it-IT', { maximumFractionDigits: 2 })} 
               unit="g/m³" 
             />
           </div>
@@ -223,6 +182,47 @@ export function ParametriClimatici({
               icon={<Wind className="text-emerald-700" size={18} />} 
               label="Umidità Specifica" 
               value={indoorHumidity.toLocaleString('it-IT', { maximumFractionDigits: 2 })} 
+              unit="g/m³" 
+            />
+          </div>
+        </div>
+
+        {/* Summer Section */}
+        <div className="space-y-6">
+          <div className="flex items-center gap-3 text-amber-600">
+            <Sun size={24} />
+            <h3 className="text-lg font-extrabold font-montserrat">Estate</h3>
+          </div>
+          <div className="bg-amber-50/50 p-4 rounded-xl border border-amber-100 text-sm text-amber-800 leading-relaxed italic">
+            "In estate dovranno essere immesse le condizioni climatiche rappresentative del periodo più caldo dell'anno (es. media delle massime del mese più caldo)."
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <InputCard 
+              label="T°C Estate" 
+              icon={<Thermometer size={16} />}
+              content={
+                <NumericInput
+                  value={summerTemp}
+                  onChange={setSummerTemp}
+                  className="w-full bg-white border border-slate-200 rounded-xl p-3.5 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all text-sm font-medium"
+                />
+              }
+            />
+            <InputCard 
+              label="UR% Estate" 
+              icon={<Droplets size={16} />}
+              content={
+                <NumericInput
+                  value={summerRH}
+                  onChange={setSummerRH}
+                  className="w-full bg-white border border-slate-200 rounded-xl p-3.5 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all text-sm font-medium"
+                />
+              }
+            />
+            <ResultCard 
+              icon={<Wind className="text-amber-600" size={18} />} 
+              label="Umidità Specifica" 
+              value={summerHumidity.toLocaleString('it-IT', { maximumFractionDigits: 2 })} 
               unit="g/m³" 
             />
           </div>

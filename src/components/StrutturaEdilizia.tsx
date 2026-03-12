@@ -9,7 +9,7 @@ import {
   ArrowRight 
 } from 'lucide-react';
 import { MATERIAL_DATABASE } from '../data/materials';
-import { BuildingElement, Layer, View, BuildingDimensions } from '../types';
+import { BuildingElement, Layer, View, BuildingDimensions, OpeningDimensions } from '../types';
 import { InputCard } from './Common';
 
 interface StrutturaEdiliziaProps {
@@ -23,6 +23,8 @@ interface StrutturaEdiliziaProps {
   setCurrentView: (view: View) => void;
   dimensions: BuildingDimensions;
   setDimensions: (dimensions: BuildingDimensions) => void;
+  openingDimensions: OpeningDimensions;
+  setOpeningDimensions: (openingDimensions: OpeningDimensions) => void;
 }
 
 export function StrutturaEdilizia({
@@ -35,7 +37,9 @@ export function StrutturaEdilizia({
   umBuilding,
   setCurrentView,
   dimensions,
-  setDimensions
+  setDimensions,
+  openingDimensions,
+  setOpeningDimensions
 }: StrutturaEdiliziaProps) {
   const roofSlope = dimensions.width > 0 
     ? ((dimensions.ridgeHeight - dimensions.eaveHeight) / (dimensions.width / 2)) * 100 
@@ -70,8 +74,9 @@ export function StrutturaEdilizia({
               <input
                 type="number"
                 min="0"
-                value={dimensions.length}
+                value={dimensions.length.toLocaleString('it-IT', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).replace(',', '.')}
                 onChange={(e) => setDimensions({ ...dimensions, length: Number(e.target.value) })}
+                step="0.1"
                 className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all text-sm font-medium"
               />
             }
@@ -83,8 +88,9 @@ export function StrutturaEdilizia({
               <input
                 type="number"
                 min="0"
-                value={dimensions.width}
+                value={dimensions.width.toLocaleString('it-IT', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).replace(',', '.')}
                 onChange={(e) => setDimensions({ ...dimensions, width: Number(e.target.value) })}
+                step="0.1"
                 className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all text-sm font-medium"
               />
             }
@@ -96,8 +102,9 @@ export function StrutturaEdilizia({
               <input
                 type="number"
                 min="0"
-                value={dimensions.ridgeHeight}
+                value={dimensions.ridgeHeight.toLocaleString('it-IT', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).replace(',', '.')}
                 onChange={(e) => setDimensions({ ...dimensions, ridgeHeight: Number(e.target.value) })}
+                step="0.1"
                 className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all text-sm font-medium"
               />
             }
@@ -109,8 +116,9 @@ export function StrutturaEdilizia({
               <input
                 type="number"
                 min="0"
-                value={dimensions.eaveHeight}
+                value={dimensions.eaveHeight.toLocaleString('it-IT', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).replace(',', '.')}
                 onChange={(e) => setDimensions({ ...dimensions, eaveHeight: Number(e.target.value) })}
+                step="0.1"
                 className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all text-sm font-medium"
               />
             }
@@ -133,27 +141,159 @@ export function StrutturaEdilizia({
         </div>
       </section>
 
+      {/* Opening Dimensions */}
+      <section className="space-y-4">
+        <h3 className="text-sm font-extrabold text-slate-500 uppercase tracking-widest font-montserrat">Dimensioni Aperture</h3>
+        
+        <div className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="md:col-span-3 flex items-center gap-2 text-slate-400">
+              <span className="text-[10px] font-bold uppercase tracking-widest">Finestre</span>
+              <div className="h-px flex-grow bg-slate-200"></div>
+            </div>
+            <InputCard 
+              label="Lunghezza (m)"
+              icon={<Maximize size={14} />}
+              content={
+                <input
+                  type="number"
+                  min="0"
+                  step="0.1"
+                  value={openingDimensions.windows.length.toLocaleString('it-IT', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).replace(',', '.')}
+                  onChange={(e) => setOpeningDimensions({
+                    ...openingDimensions,
+                    windows: { ...openingDimensions.windows, length: Number(e.target.value) }
+                  })}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all text-sm font-medium"
+                />
+              }
+            />
+            <InputCard 
+              label="Altezza (m)"
+              icon={<Maximize size={14} />}
+              content={
+                <input
+                  type="number"
+                  min="0"
+                  step="0.1"
+                  value={openingDimensions.windows.height.toLocaleString('it-IT', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).replace(',', '.')}
+                  onChange={(e) => setOpeningDimensions({
+                    ...openingDimensions,
+                    windows: { ...openingDimensions.windows, height: Number(e.target.value) }
+                  })}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all text-sm font-medium"
+                />
+              }
+            />
+            <InputCard 
+              label="Numero"
+              icon={<Maximize size={14} />}
+              content={
+                <input
+                  type="number"
+                  min="0"
+                  step="1"
+                  value={openingDimensions.windows.count}
+                  onChange={(e) => setOpeningDimensions({
+                    ...openingDimensions,
+                    windows: { ...openingDimensions.windows, count: Math.floor(Number(e.target.value)) }
+                  })}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all text-sm font-medium"
+                />
+              }
+            />
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="md:col-span-3 flex items-center gap-2 text-slate-400">
+              <span className="text-[10px] font-bold uppercase tracking-widest">Porte</span>
+              <div className="h-px flex-grow bg-slate-200"></div>
+            </div>
+            <InputCard 
+              label="Larghezza (m)"
+              icon={<Maximize size={14} />}
+              content={
+                <input
+                  type="number"
+                  min="0"
+                  step="0.1"
+                  value={openingDimensions.doors.width.toLocaleString('it-IT', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).replace(',', '.')}
+                  onChange={(e) => setOpeningDimensions({
+                    ...openingDimensions,
+                    doors: { ...openingDimensions.doors, width: Number(e.target.value) }
+                  })}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all text-sm font-medium"
+                />
+              }
+            />
+            <InputCard 
+              label="Altezza (m)"
+              icon={<Maximize size={14} />}
+              content={
+                <input
+                  type="number"
+                  min="0"
+                  step="0.1"
+                  value={openingDimensions.doors.height.toLocaleString('it-IT', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).replace(',', '.')}
+                  onChange={(e) => setOpeningDimensions({
+                    ...openingDimensions,
+                    doors: { ...openingDimensions.doors, height: Number(e.target.value) }
+                  })}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all text-sm font-medium"
+                />
+              }
+            />
+            <InputCard 
+              label="Numero"
+              icon={<Maximize size={14} />}
+              content={
+                <input
+                  type="number"
+                  min="0"
+                  step="1"
+                  value={openingDimensions.doors.count}
+                  onChange={(e) => setOpeningDimensions({
+                    ...openingDimensions,
+                    doors: { ...openingDimensions.doors, count: Math.floor(Number(e.target.value)) }
+                  })}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all text-sm font-medium"
+                />
+              }
+            />
+          </div>
+        </div>
+      </section>
+
       {/* Surfaces Input */}
       <section className="space-y-4">
         <h3 className="text-sm font-extrabold text-slate-500 uppercase tracking-widest font-montserrat">Superfici Disperdenti (m²)</h3>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-          {elements.map(el => (
-            <div key={el.id}>
-              <InputCard 
-                label={el.name}
-                icon={<Maximize size={14} />}
-                content={
-                  <input
-                    type="number"
-                    min="0"
-                    value={el.surface}
-                    onChange={(e) => updateElement(el.id, { surface: Number(e.target.value) })}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all text-sm font-medium"
-                  />
-                }
-              />
-            </div>
-          ))}
+          {elements.map(el => {
+            const isCalculated = ['windows', 'doors', 'floor', 'walls', 'heads', 'roof'].includes(el.id);
+            return (
+              <div key={el.id}>
+                <InputCard 
+                  label={el.name}
+                  icon={<Maximize size={14} />}
+                  content={
+                    <input
+                      type="number"
+                      min="0"
+                      step="0.1"
+                      value={el.surface.toLocaleString('it-IT', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).replace(',', '.')}
+                      readOnly={isCalculated}
+                      onChange={(e) => !isCalculated && updateElement(el.id, { surface: Number(e.target.value) })}
+                      className={`w-full border rounded-xl p-2.5 focus:outline-none transition-all text-sm font-medium ${
+                        isCalculated 
+                          ? 'bg-emerald-50 border-emerald-100 text-emerald-900 cursor-not-allowed' 
+                          : 'bg-slate-50 border-slate-200 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500'
+                      }`}
+                    />
+                  }
+                />
+              </div>
+            );
+          })}
         </div>
       </section>
 
@@ -254,28 +394,28 @@ export function StrutturaEdilizia({
       </section>
 
       {/* Um Building Result - Prominent at the bottom */}
-      <div className="bg-emerald-500/10 p-8 rounded-2xl border border-emerald-500/20 shadow-sm">
+      <div className="bg-emerald-500/20 p-6 rounded-2xl border border-emerald-500/30 shadow-sm">
         <span className="text-xs font-bold text-emerald-800 uppercase block mb-2 tracking-widest">
           Um - Coefficiente globale di trasmissione termica media
         </span>
         <div className="flex items-baseline gap-2">
-          <h4 className="text-6xl font-bold font-mono tracking-tighter text-emerald-900">
+          <h4 className="text-5xl font-bold font-mono tracking-tighter text-emerald-900">
             {umBuilding.toLocaleString('it-IT', { maximumFractionDigits: 3 })}
           </h4>
-          <span className="text-2xl font-medium text-emerald-700">W/m²K</span>
+          <span className="text-xl font-medium text-emerald-700">W/m²K</span>
         </div>
         <p className="mt-4 text-emerald-700/80 text-sm italic leading-relaxed font-medium">
           Rappresenta il valore medio della trasmittanza termica di tutti gli elementi costruttivi che compongono l'involucro dell'edificio.
         </p>
       </div>
 
-      <div className="flex justify-end items-center pt-8">
+      <div className="flex justify-end items-center pt-5">
         <button 
           onClick={() => setCurrentView('results')}
-          className="flex items-center gap-3 bg-emerald-600 text-white px-8 py-4 rounded-2xl font-bold hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-100 group"
+          className="flex items-center gap-1.5 bg-emerald-600 text-white px-5 py-2.5 rounded-xl font-semibold hover:bg-emerald-700 transition-colors text-sm group"
         >
           Vai al calcolo del bilancio termico
-          <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
+          <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
         </button>
       </div>
     </motion.div>
