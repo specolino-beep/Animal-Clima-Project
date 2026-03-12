@@ -165,15 +165,22 @@ export function ParametriClimatici({
         </div>
       </div>
 
-      <div className="flex justify-end items-center pt-6">
-  <button 
-    onClick={() => setCurrentView('structure')}
-    className="flex items-center gap-1.5 bg-emerald-600 text-white px-5 py-2.5 rounded-xl font-semibold hover:bg-emerald-700 transition-colors text-sm shadow-sm group"
-  >
-    Vai alla configurazione della struttura
-    <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
-  </button>
-</div>
+      <div className="flex justify-end items-center pt-6 gap-4">
+        <button 
+          onClick={() => setCurrentView('ventilation')}
+          className="flex items-center gap-1.5 bg-emerald-600 text-white px-5 py-2.5 rounded-xl font-semibold hover:bg-emerald-700 transition-colors text-sm shadow-sm group"
+        >
+          Ventilazione per il Ricambio dell'aria
+          <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+        </button>
+        <button 
+          onClick={() => setCurrentView('structure')}
+          className="flex items-center gap-1.5 bg-emerald-600 text-white px-5 py-2.5 rounded-xl font-semibold hover:bg-emerald-700 transition-colors text-sm shadow-sm group"
+        >
+          Vai alla configurazione della struttura
+          <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+        </button>
+      </div>
     </motion.div>
   );
 }

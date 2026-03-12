@@ -4,8 +4,20 @@ import {
   Wind, 
   Database, 
   Zap, 
-  ArrowRight 
+  ArrowRight,
+  BarChart3
 } from 'lucide-react';
+import { 
+  BarChart, 
+  Bar, 
+  XAxis, 
+  YAxis, 
+  CartesianGrid, 
+  Tooltip, 
+  ResponsiveContainer, 
+  Cell,
+  LabelList
+} from 'recharts';
 import { View } from '../types';
 import { InputCard, ResultCard } from './Common';
 
@@ -53,7 +65,7 @@ export function ParametriVentilazione({
       className="space-y-8"
     >
       <section className="bg-slate-800 rounded-2xl border border-slate-700 p-8 shadow-sm">
-        <h2 className="text-2xl font-extrabold text-white mb-2 font-montserrat">Ventilazione (Portata d'Aria di Ricambio)</h2>
+        <h2 className="text-2xl font-extrabold text-white mb-2 font-montserrat">Ventilazione per il Ricambio dell'aria</h2>
         <p className="text-emerald-300 font-medium">Calcolo della portata d'aria necessaria per il controllo della CO2 e dell'umidità.</p>
       </section>
 
@@ -96,17 +108,57 @@ export function ParametriVentilazione({
         />
       </section>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="space-y-8">
         <div className="space-y-6">
           <h3 className="text-sm font-extrabold text-slate-500 uppercase tracking-widest flex items-center gap-2 font-montserrat">
             <Wind size={16} className="text-cyan-600" />
             Portate Minime Invernali
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <ResultCard icon={<Wind className="text-cyan-600" size={18} />} label="Portata per CO2" value={vInvCO2.toLocaleString('it-IT', { maximumFractionDigits: 1 })} unit="m³/h" />
-            <ResultCard icon={<Wind className="text-blue-600" size={18} />} label="Portata per H2O" value={vInvH2O.toLocaleString('it-IT', { maximumFractionDigits: 1 })} unit="m³/h" />
+            <div className="sm:col-span-2 bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+              <div className="h-48 w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart
+                    data={[
+                      { name: 'Portata per CO2', value: vInvCO2, color: '#0891b2' },
+                      { name: 'Portata per H2O', value: vInvH2O, color: '#2563eb' }
+                    ]}
+                    margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                    <XAxis 
+                      dataKey="name" 
+                      axisLine={false} 
+                      tickLine={false} 
+                      tick={{ fill: '#64748b', fontSize: 12, fontWeight: 600 }}
+                    />
+                    <YAxis hide />
+                    <Tooltip 
+                      cursor={{ fill: '#f8fafc' }}
+                      contentStyle={{ 
+                        borderRadius: '12px', 
+                        border: 'none', 
+                        boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)',
+                        fontSize: '12px'
+                      }}
+                      formatter={(value: number) => [value.toLocaleString('it-IT', { maximumFractionDigits: 1 }) + ' m³/h', 'Portata']}
+                    />
+                    <Bar dataKey="value" radius={[8, 8, 0, 0]} barSize={60}>
+                      <Cell fill="#0891b2" />
+                      <Cell fill="#2563eb" />
+                      <LabelList 
+                        dataKey="value" 
+                        position="top" 
+                        formatter={(v: number) => v.toLocaleString('it-IT', { maximumFractionDigits: 1 }) + ' m³/h'}
+                        style={{ fill: '#334155', fontSize: 11, fontWeight: 700, fontFamily: 'monospace' }}
+                      />
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
             <div className="sm:col-span-2 bg-emerald-500/10 p-6 rounded-2xl text-slate-900 border border-emerald-500/20 shadow-sm">
-              <span className="text-[10px] font-bold uppercase tracking-widest text-emerald-800 opacity-80">Portata di Progetto (Inverno)</span>
+              <span className="text-[10px] font-bold uppercase tracking-widest text-emerald-800 opacity-80">Portata di Ventilazione Minima</span>
               <div className="flex items-baseline gap-2 mt-1">
                 <span className="text-3xl font-bold font-mono text-emerald-900">{vMinProgetto.toLocaleString('it-IT', { maximumFractionDigits: 1 })}</span>
                 <span className="text-sm font-medium text-emerald-700 opacity-80">m³/h</span>
@@ -151,6 +203,88 @@ export function ParametriVentilazione({
           </div>
         </div>
       </div>
+
+      <section className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+        <div className="flex items-center gap-2 mb-6">
+          <BarChart3 className="text-emerald-600" size={20} />
+          <h3 className="text-sm font-extrabold text-slate-500 uppercase tracking-widest font-montserrat">
+            Confronto Portate Unitarie (m³/h per kg Peso Vivo)
+          </h3>
+        </div>
+        
+        <div className="flex flex-col lg:flex-row gap-8 items-center">
+          <div className="h-64 w-full lg:w-2/3">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart
+                data={[
+                  { name: 'Inverno', value: vMinPerPesoVivo, color: '#0891b2' },
+                  { name: 'Estate', value: vEstPerPesoVivo, color: '#d97706' }
+                ]}
+                margin={{ top: 20, right: 30, left: 20, bottom: 20 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                <XAxis 
+                  dataKey="name" 
+                  axisLine={false} 
+                  tickLine={false} 
+                  tick={{ fill: '#64748b', fontSize: 12, fontWeight: 600 }}
+                  dy={10}
+                />
+                <YAxis 
+                  axisLine={false} 
+                  tickLine={false} 
+                  tick={{ fill: '#64748b', fontSize: 10 }}
+                  label={{ 
+                    value: 'm³/h per kg PV', 
+                    angle: -90, 
+                    position: 'insideLeft',
+                    style: { fill: '#94a3b8', fontSize: 10, fontWeight: 600, textTransform: 'uppercase' }
+                  }}
+                />
+                <Tooltip 
+                  cursor={{ fill: '#f8fafc' }}
+                  contentStyle={{ 
+                    borderRadius: '12px', 
+                    border: 'none', 
+                    boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)',
+                    fontSize: '12px'
+                  }}
+                  formatter={(value: number) => [value.toLocaleString('it-IT', { maximumFractionDigits: 3 }) + ' m³/h/kg', 'Portata']}
+                />
+                <Bar dataKey="value" radius={[8, 8, 0, 0]} barSize={60}>
+                  {
+                    [
+                      { name: 'Inverno', value: vMinPerPesoVivo, color: '#0891b2' },
+                      { name: 'Estate', value: vEstPerPesoVivo, color: '#d97706' }
+                    ].map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))
+                  }
+                  <LabelList 
+                    dataKey="value" 
+                    position="top" 
+                    formatter={(v: number) => v.toLocaleString('it-IT', { maximumFractionDigits: 3 })}
+                    style={{ fill: '#334155', fontSize: 12, fontWeight: 700, fontFamily: 'monospace' }}
+                  />
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+
+          <div className="w-full lg:w-1/3 bg-slate-50 rounded-2xl p-6 border border-slate-100 flex flex-col items-center justify-center text-center">
+            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Rapporto Estate / Inverno</span>
+            <div className="text-4xl font-black text-slate-900 font-mono mb-1">
+              {vMinPerPesoVivo > 0 
+                ? `+${((vEstPerPesoVivo / vMinPerPesoVivo) * 100).toLocaleString('it-IT', { maximumFractionDigits: 0 })}%`
+                : 'N/A'
+              }
+            </div>
+            <p className="text-xs text-slate-500 font-medium leading-relaxed">
+              La portata estiva è circa <span className="text-amber-600 font-bold">{vMinPerPesoVivo > 0 ? (vEstPerPesoVivo / vMinPerPesoVivo).toLocaleString('it-IT', { maximumFractionDigits: 1 }) : '0'} volte</span> superiore a quella minima invernale.
+            </p>
+          </div>
+        </div>
+      </section>
 
       <div className="flex justify-end items-center pt-6">
   <button 

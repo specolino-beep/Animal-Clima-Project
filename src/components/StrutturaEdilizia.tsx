@@ -6,7 +6,8 @@ import {
   Plus, 
   Trash2, 
   ChevronDown, 
-  ArrowRight 
+  ArrowRight,
+  Wind
 } from 'lucide-react';
 import { MATERIAL_DATABASE } from '../data/materials';
 import { BuildingElement, Layer, View, BuildingDimensions, OpeningDimensions } from '../types';
@@ -409,7 +410,14 @@ export function StrutturaEdilizia({
         </p>
       </div>
 
-      <div className="flex justify-end items-center pt-5">
+      <div className="flex justify-end items-center pt-5 gap-4">
+        <button 
+          onClick={() => setCurrentView('ventilation')}
+          className="flex items-center gap-1.5 bg-emerald-600 text-white px-5 py-2.5 rounded-xl font-semibold hover:bg-emerald-700 transition-colors text-sm group"
+        >
+          Ventilazione per il Ricambio dell'aria
+          <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+        </button>
         <button 
           onClick={() => setCurrentView('results')}
           className="flex items-center gap-1.5 bg-emerald-600 text-white px-5 py-2.5 rounded-xl font-semibold hover:bg-emerald-700 transition-colors text-sm group"

@@ -39,6 +39,11 @@ export default function App() {
   const [currentView, setCurrentView] = useState<View>('home');
   const [isNavOpen, setIsNavOpen] = useState(false);
 
+  // Scroll to top when view changes
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [currentView]);
+
   const views: { id: View; label: string; icon: React.ReactNode }[] = [
     { id: 'home', label: 'Dashboard', icon: <Activity size={18} /> },
     { id: 'animals', label: 'Configurazione Animali', icon: <Activity size={18} /> },
