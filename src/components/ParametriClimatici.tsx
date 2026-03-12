@@ -31,46 +31,6 @@ interface ParametriClimaticiProps {
   setCurrentView: (view: View) => void;
 }
 
-interface NumericInputProps {
-  value: number;
-  onChange: (v: number) => void;
-  className?: string;
-}
-
-function NumericInput({ value, onChange, className }: NumericInputProps) {
-  const [localValue, setLocalValue] = React.useState<string>(value?.toString() ?? '');
-
-  React.useEffect(() => {
-    if (value !== undefined && Number(localValue) !== value) {
-      setLocalValue(value.toString());
-    }
-  }, [value]);
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const val = e.target.value;
-    setLocalValue(val);
-    
-    if (val === '') {
-      onChange(0);
-    } else if (val !== '-' && val !== '.' && val !== '-.') {
-      const num = Number(val);
-      if (!isNaN(num)) {
-        onChange(num);
-      }
-    }
-  };
-
-  return (
-    <input
-      type="text"
-      inputMode="decimal"
-      value={localValue}
-      onChange={handleInputChange}
-      className={className}
-    />
-  );
-}
-
 export function ParametriClimatici({
   winterTemp,
   setWinterTemp,
@@ -104,38 +64,30 @@ export function ParametriClimatici({
         </p>
       </section>
 
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+      <div className="space-y-12">
         {/* Winter Section */}
         <div className="space-y-6">
-          <div className="flex items-center gap-3 text-cyan-700">
+          <div className="flex items-center gap-3 text-cyan-700 border-b border-cyan-100 pb-2">
             <Snowflake size={24} />
             <h3 className="text-lg font-extrabold font-montserrat">Inverno</h3>
           </div>
           <div className="bg-cyan-50/50 p-4 rounded-xl border border-cyan-100 text-sm text-cyan-800 leading-relaxed italic">
             "In inverno dovranno essere immesse le condizioni climatiche rappresentative del periodo più freddo dell'anno (es. media delle minime del mese più freddo)."
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <InputCard 
-              label="T°C Inverno" 
+              label="Temperatura" 
               icon={<Thermometer size={16} />}
-              content={
-                <NumericInput
-                  value={winterTemp}
-                  onChange={setWinterTemp}
-                  className="w-full bg-white border border-slate-200 rounded-xl p-3.5 focus:outline-none focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 transition-all text-sm font-medium"
-                />
-              }
+              value={winterTemp}
+              onChange={setWinterTemp}
+              unit="°C"
             />
             <InputCard 
-              label="UR% Inverno" 
+              label="Umidità Relativa" 
               icon={<Droplets size={16} />}
-              content={
-                <NumericInput
-                  value={winterRH}
-                  onChange={setWinterRH}
-                  className="w-full bg-white border border-slate-200 rounded-xl p-3.5 focus:outline-none focus:ring-2 focus:ring-cyan-500/20 focus:border-cyan-500 transition-all text-sm font-medium"
-                />
-              }
+              value={winterRH}
+              onChange={setWinterRH}
+              unit="%"
             />
             <ResultCard 
               icon={<Wind className="text-cyan-700" size={18} />} 
@@ -148,35 +100,27 @@ export function ParametriClimatici({
 
         {/* Indoor Section */}
         <div className="space-y-6">
-          <div className="flex items-center gap-3 text-emerald-700">
+          <div className="flex items-center gap-3 text-emerald-700 border-b border-emerald-100 pb-2">
             <HomeIcon size={24} />
             <h3 className="text-lg font-extrabold font-montserrat">Ambiente Interno</h3>
           </div>
           <div className="bg-emerald-50/50 p-4 rounded-xl border border-emerald-100 text-sm text-emerald-800 leading-relaxed italic">
             "Parametri target per l'ambiente interno, necessari per calcolare il differenziale di umidità e CO2."
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <InputCard 
-              label="T°C Interna" 
+              label="Temperatura" 
               icon={<Thermometer size={16} />}
-              content={
-                <NumericInput
-                  value={indoorTemp}
-                  onChange={setIndoorTemp}
-                  className="w-full bg-white border border-slate-200 rounded-xl p-3.5 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all text-sm font-medium"
-                />
-              }
+              value={indoorTemp}
+              onChange={setIndoorTemp}
+              unit="°C"
             />
             <InputCard 
-              label="UR% Interna" 
+              label="Umidità Relativa" 
               icon={<Droplets size={16} />}
-              content={
-                <NumericInput
-                  value={indoorRH}
-                  onChange={setIndoorRH}
-                  className="w-full bg-white border border-slate-200 rounded-xl p-3.5 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all text-sm font-medium"
-                />
-              }
+              value={indoorRH}
+              onChange={setIndoorRH}
+              unit="%"
             />
             <ResultCard 
               icon={<Wind className="text-emerald-700" size={18} />} 
@@ -189,35 +133,27 @@ export function ParametriClimatici({
 
         {/* Summer Section */}
         <div className="space-y-6">
-          <div className="flex items-center gap-3 text-amber-600">
+          <div className="flex items-center gap-3 text-amber-600 border-b border-amber-100 pb-2">
             <Sun size={24} />
             <h3 className="text-lg font-extrabold font-montserrat">Estate</h3>
           </div>
           <div className="bg-amber-50/50 p-4 rounded-xl border border-amber-100 text-sm text-amber-800 leading-relaxed italic">
             "In estate dovranno essere immesse le condizioni climatiche rappresentative del periodo più caldo dell'anno (es. media delle massime del mese più caldo)."
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <InputCard 
-              label="T°C Estate" 
+              label="Temperatura" 
               icon={<Thermometer size={16} />}
-              content={
-                <NumericInput
-                  value={summerTemp}
-                  onChange={setSummerTemp}
-                  className="w-full bg-white border border-slate-200 rounded-xl p-3.5 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all text-sm font-medium"
-                />
-              }
+              value={summerTemp}
+              onChange={setSummerTemp}
+              unit="°C"
             />
             <InputCard 
-              label="UR% Estate" 
+              label="Umidità Relativa" 
               icon={<Droplets size={16} />}
-              content={
-                <NumericInput
-                  value={summerRH}
-                  onChange={setSummerRH}
-                  className="w-full bg-white border border-slate-200 rounded-xl p-3.5 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all text-sm font-medium"
-                />
-              }
+              value={summerRH}
+              onChange={setSummerRH}
+              unit="%"
             />
             <ResultCard 
               icon={<Wind className="text-amber-600" size={18} />} 
