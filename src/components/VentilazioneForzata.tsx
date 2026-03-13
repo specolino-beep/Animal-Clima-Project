@@ -121,234 +121,244 @@ export function VentilazioneForzata({
         <p className="text-emerald-300 font-medium">Dimensionamento ventilatori e calcolo consumi</p>
       </section>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Configurazione Ventilatore */}
-        <div className="lg:col-span-2 space-y-6">
-          <div className="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm space-y-8">
-            <div className="flex items-center gap-3 border-b border-slate-100 pb-4">
-              <Settings className="text-emerald-600" size={20} />
-              <h3 className="text-lg font-extrabold text-slate-900 font-montserrat">Scelta Ventilatore</h3>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-4">
-                <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Modalità Selezione</label>
-                <div className="flex p-1 bg-slate-100 rounded-xl">
-                  <button 
-                    onClick={() => updateParam({ mode: 'preset' })}
-                    className={`flex-1 py-2 rounded-lg text-sm font-bold transition-all ${params.mode === 'preset' ? 'bg-white text-emerald-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
-                  >
-                    Database
-                  </button>
-                  <button 
-                    onClick={() => updateParam({ mode: 'manual' })}
-                    className={`flex-1 py-2 rounded-lg text-sm font-bold transition-all ${params.mode === 'manual' ? 'bg-white text-emerald-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
-                  >
-                    Manuale
-                  </button>
-                </div>
-              </div>
-
-              {params.mode === 'preset' ? (
-                <div className="space-y-4">
-                  <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Seleziona Modello</label>
-                  <select 
-                    value={params.selectedFanId}
-                    onChange={(e) => updateParam({ selectedFanId: e.target.value })}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-medium focus:ring-2 focus:ring-emerald-500/20 outline-none"
-                  >
-                    {fanDatabase.map(f => (
-                      <option key={f.id} value={f.id}>
-                        Ø {f.diameter}mm - {f.power}kW ({f.airflow} m³/h)
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              ) : (
-                <div className="grid grid-cols-3 gap-4">
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-bold text-slate-400 uppercase">Ø (mm)</label>
-                    <input 
-                      type="number"
-                      value={params.manualFan?.diameter || 0}
-                      onChange={(e) => updateManualFan({ diameter: Number(e.target.value) })}
-                      className="w-full bg-slate-50 border border-slate-200 rounded-lg p-2 text-sm font-bold outline-none"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-bold text-slate-400 uppercase">Pot. (kW)</label>
-                    <input 
-                      type="number"
-                      step="0.01"
-                      value={params.manualFan?.power || 0}
-                      onChange={(e) => updateManualFan({ power: Number(e.target.value) })}
-                      className="w-full bg-slate-50 border border-slate-200 rounded-lg p-2 text-sm font-bold outline-none"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-bold text-slate-400 uppercase">m³/h</label>
-                    <input 
-                      type="number"
-                      value={params.manualFan?.airflow || 0}
-                      onChange={(e) => updateManualFan({ airflow: Number(e.target.value) })}
-                      className="w-full bg-slate-50 border border-slate-200 rounded-lg p-2 text-sm font-bold outline-none"
-                    />
-                  </div>
-                </div>
-              )}
-            </div>
-
-            <div className="flex items-center justify-between p-4 bg-emerald-50 rounded-2xl border border-emerald-100">
-              <div className="flex items-center gap-3">
-                <Zap className="text-emerald-600" size={20} />
-                <div>
-                  <h4 className="text-sm font-bold text-emerald-900">Utilizzo Inverter</h4>
-                  <p className="text-xs text-emerald-600 font-medium">Modulazione continua della portata</p>
-                </div>
-              </div>
-              <button 
-                onClick={() => updateParam({ useInverter: !params.useInverter })}
-                className={`w-12 h-6 rounded-full transition-all relative ${params.useInverter ? 'bg-emerald-600' : 'bg-slate-300'}`}
-              >
-                <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${params.useInverter ? 'right-1' : 'left-1'}`} />
-              </button>
-            </div>
+      <div className="max-w-5xl mx-auto space-y-8">
+        {/* Scelta Ventilatore */}
+        <div className="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm space-y-8">
+          <div className="flex items-center gap-3 border-b border-slate-100 pb-4">
+            <Settings className="text-emerald-600" size={20} />
+            <h3 className="text-lg font-extrabold text-slate-900 font-montserrat">Scelta Ventilatore</h3>
           </div>
 
-          {/* Ventilazione Invernale */}
-          <div className="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm space-y-6">
-            <div className="flex items-center gap-3 border-b border-slate-100 pb-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-4">
+              <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Modalità Selezione</label>
+              <div className="flex p-1 bg-slate-100 rounded-xl">
+                <button 
+                  onClick={() => updateParam({ mode: 'preset' })}
+                  className={`flex-1 py-2 rounded-lg text-sm font-bold transition-all ${params.mode === 'preset' ? 'bg-white text-emerald-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                >
+                  Database
+                </button>
+                <button 
+                  onClick={() => updateParam({ mode: 'manual' })}
+                  className={`flex-1 py-2 rounded-lg text-sm font-bold transition-all ${params.mode === 'manual' ? 'bg-white text-emerald-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                >
+                  Manuale
+                </button>
+              </div>
+            </div>
+
+            {params.mode === 'preset' ? (
+              <div className="space-y-4">
+                <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Seleziona Modello</label>
+                <select 
+                  value={params.selectedFanId}
+                  onChange={(e) => updateParam({ selectedFanId: e.target.value })}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-medium focus:ring-2 focus:ring-emerald-500/20 outline-none"
+                >
+                  {fanDatabase.map(f => (
+                    <option key={f.id} value={f.id}>
+                      Ø {f.diameter}mm - {f.power}kW ({f.airflow} m³/h)
+                    </option>
+                  ))}
+                </select>
+              </div>
+            ) : (
+              <div className="grid grid-cols-3 gap-4">
+                <div className="space-y-2">
+                  <label className="text-[10px] font-bold text-slate-400 uppercase">Ø (mm)</label>
+                  <input 
+                    type="number"
+                    value={params.manualFan?.diameter || 0}
+                    onChange={(e) => updateManualFan({ diameter: Number(e.target.value) })}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-lg p-2 text-sm font-bold outline-none"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[10px] font-bold text-slate-400 uppercase">Pot. (kW)</label>
+                  <input 
+                    type="number"
+                    step="0.01"
+                    value={params.manualFan?.power || 0}
+                    onChange={(e) => updateManualFan({ power: Number(e.target.value) })}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-lg p-2 text-sm font-bold outline-none"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[10px] font-bold text-slate-400 uppercase">m³/h</label>
+                  <input 
+                    type="number"
+                    value={params.manualFan?.airflow || 0}
+                    onChange={(e) => updateManualFan({ airflow: Number(e.target.value) })}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-lg p-2 text-sm font-bold outline-none"
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div className="flex items-center justify-between p-4 bg-emerald-50 rounded-2xl border border-emerald-100">
+            <div className="flex items-center gap-3">
+              <Zap className="text-emerald-600" size={20} />
+              <div>
+                <h4 className="text-sm font-bold text-emerald-900">Utilizzo Inverter</h4>
+                <p className="text-xs text-emerald-600 font-medium">Modulazione continua della portata</p>
+              </div>
+            </div>
+            <button 
+              onClick={() => updateParam({ useInverter: !params.useInverter })}
+              className={`w-12 h-6 rounded-full transition-all relative ${params.useInverter ? 'bg-emerald-600' : 'bg-slate-300'}`}
+            >
+              <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${params.useInverter ? 'right-1' : 'left-1'}`} />
+            </button>
+          </div>
+        </div>
+
+        {/* Ventilazione Invernale */}
+        <div className="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm space-y-6">
+          <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+            <div className="flex items-center gap-3">
               <Minimize className="text-emerald-600" size={20} />
               <h3 className="text-lg font-extrabold text-slate-900 font-montserrat">Ventilazione Invernale</h3>
             </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <InputCard 
-                label="Ventilatori Attivi"
-                icon={<Activity size={16} />}
-                value={params.winterFansCount}
-                onChange={(val) => updateParam({ winterFansCount: val })}
-                unit="unità"
-                description="Numero di ventilatori operativi in inverno"
-              />
-              <div className="bg-slate-50 p-6 rounded-2xl border border-slate-200 flex flex-col justify-center">
-                <span className="text-xs font-bold text-slate-400 uppercase mb-2">Velocità Aria</span>
-                <div className="flex items-baseline gap-2">
-                  <span className="text-2xl font-bold text-emerald-600">{airVelocityWinter.toFixed(2)}</span>
-                  <span className="text-xs font-medium text-slate-400">m/s</span>
-                </div>
-                <p className="text-[10px] text-slate-400 mt-2">Invernale</p>
-              </div>
-              {!params.useInverter ? (
-                <div className="bg-slate-50 p-6 rounded-2xl border border-slate-200 flex flex-col justify-center">
-                  <span className="text-xs font-bold text-slate-400 uppercase mb-2">Tempo Funzionamento</span>
-                  <div className="flex items-baseline gap-2">
-                    <span className="text-2xl font-bold text-emerald-600">{winterMinutesPerHour.toFixed(1)}</span>
-                    <span className="text-xs font-medium text-slate-400">min/ora</span>
-                  </div>
-                  <p className="text-[10px] text-slate-400 mt-2">Garantisce {targetWinterFlow.toLocaleString()} m³/h</p>
-                </div>
-              ) : (
-                <div className="bg-slate-50 p-6 rounded-2xl border border-slate-200 flex flex-col justify-center">
-                  <span className="text-xs font-bold text-slate-400 uppercase mb-2">Modulazione Inverter</span>
-                  <div className="flex items-baseline gap-2">
-                    <span className="text-2xl font-bold text-emerald-600">{(safeModulation * 100).toFixed(0)}%</span>
-                    <span className="text-xs font-medium text-slate-400">della velocità max</span>
-                  </div>
-                  <p className="text-[10px] text-slate-400 mt-2">Calcolata per garantire {targetWinterFlow.toLocaleString()} m³/h</p>
-                </div>
-              )}
-            </div>
+            <span className="text-xs font-bold text-slate-400 bg-slate-100 px-3 py-1 rounded-full uppercase tracking-wider">
+              Necessaria (di progetto): {targetWinterFlow.toLocaleString('it-IT')} m³/h
+            </span>
           </div>
-
-          {/* Geometria e Velocità */}
-          <div className="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm space-y-6">
-            <div className="flex items-center gap-3 border-b border-slate-100 pb-4">
-              <Layout className="text-emerald-600" size={20} />
-              <h3 className="text-lg font-extrabold text-slate-900 font-montserrat">Schema di Flusso e Velocità Aria</h3>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-4">
-                <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Tipo Ventilazione</label>
-                <div className="flex p-1 bg-slate-100 rounded-xl">
-                  <button 
-                    onClick={() => updateParam({ ventilationType: 'longitudinal' })}
-                    className={`flex-1 py-2 rounded-lg text-sm font-bold transition-all ${params.ventilationType === 'longitudinal' ? 'bg-white text-emerald-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
-                  >
-                    Longitudinale
-                  </button>
-                  <button 
-                    onClick={() => updateParam({ ventilationType: 'transversal' })}
-                    className={`flex-1 py-2 rounded-lg text-sm font-bold transition-all ${params.ventilationType === 'transversal' ? 'bg-white text-emerald-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
-                  >
-                    Trasversale
-                  </button>
-                </div>
-              </div>
-
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <InputCard 
+              label="Ventilatori Attivi"
+              icon={<Activity size={16} />}
+              value={params.winterFansCount}
+              onChange={(val) => updateParam({ winterFansCount: val })}
+              unit="unità"
+              description="Numero di ventilatori operativi in inverno"
+            />
+            {!params.useInverter ? (
               <div className="bg-slate-50 p-6 rounded-2xl border border-slate-200 flex flex-col justify-center">
-                <span className="text-xs font-bold text-slate-400 uppercase mb-2">Area Sezione Calcolata</span>
+                <span className="text-xs font-bold text-slate-400 uppercase mb-2">Tempo Funzionamento</span>
                 <div className="flex items-baseline gap-2">
-                  <span className="text-2xl font-bold text-slate-900">{currentArea.toLocaleString('it-IT', { maximumFractionDigits: 1 })}</span>
-                  <span className="text-xs font-medium text-slate-400">m²</span>
+                  <span className="text-2xl font-bold text-emerald-600">{winterMinutesPerHour.toLocaleString('it-IT', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}</span>
+                  <span className="text-xs font-medium text-slate-400">min/ora</span>
                 </div>
-                <p className="text-[10px] text-slate-400 mt-2">Dati derivati dal modulo Struttura Edilizia</p>
+                <p className="text-[10px] text-slate-400 mt-2">Garantisce {targetWinterFlow.toLocaleString('it-IT')} m³/h</p>
               </div>
+            ) : (
+              <div className="bg-slate-50 p-6 rounded-2xl border border-slate-200 flex flex-col justify-center">
+                <span className="text-xs font-bold text-slate-400 uppercase mb-2">Modulazione Inverter</span>
+                <div className="flex items-baseline gap-2">
+                  <span className="text-2xl font-bold text-emerald-600">{(safeModulation * 100).toLocaleString('it-IT', { maximumFractionDigits: 0 })}%</span>
+                  <span className="text-xs font-medium text-slate-400">della velocità max</span>
+                </div>
+                <p className="text-[10px] text-slate-400 mt-2">Calcolata per garantire {targetWinterFlow.toLocaleString('it-IT')} m³/h</p>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Ventilazione Estiva */}
+        <div className="bg-emerald-50/50 p-8 rounded-2xl border border-emerald-100 shadow-sm text-emerald-900 space-y-6">
+          <div className="flex items-center justify-between border-b border-emerald-200 pb-4">
+            <div className="flex items-center gap-3">
+              <Maximize size={20} className="text-emerald-600" />
+              <h3 className="text-lg font-extrabold text-slate-900 font-montserrat">Ventilazione Estiva</h3>
+            </div>
+            <span className="text-xs font-bold text-emerald-600 bg-white/50 px-3 py-1 rounded-full uppercase tracking-wider">
+              Necessaria (di progetto): {vEstTotale.toLocaleString('it-IT')} m³/h
+            </span>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="flex justify-between items-center bg-white/40 p-4 rounded-xl">
+              <span className="text-emerald-600 text-sm font-bold uppercase tracking-tight">Ventilatori Necessari</span>
+              <span className="text-2xl font-black">{fansNeededSummer}</span>
+            </div>
+            <div className="flex justify-between items-center bg-white/40 p-4 rounded-xl">
+              <span className="text-emerald-600 text-sm font-bold uppercase tracking-tight">Portata Totale</span>
+              <span className="text-lg font-black">{actualFlowSummer.toLocaleString('it-IT')} m³/h</span>
             </div>
           </div>
         </div>
 
-        {/* Risultati */}
-        <div className="space-y-6">
-          <div className="bg-emerald-50/50 p-8 rounded-2xl border border-emerald-100 shadow-sm text-emerald-900 space-y-6">
-            <div className="flex items-center gap-3 border-b border-emerald-200 pb-4">
-              <Maximize size={20} className="text-emerald-600" />
-              <h3 className="text-lg font-extrabold font-montserrat">Ventilazione Estiva</h3>
-            </div>
-            
+        {/* Geometria e Velocità */}
+        <div className="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm space-y-6">
+          <div className="flex items-center gap-3 border-b border-slate-100 pb-4">
+            <Layout className="text-emerald-600" size={20} />
+            <h3 className="text-lg font-extrabold text-slate-900 font-montserrat">Schema di Flusso e Velocità Aria</h3>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-4">
-              <div className="flex justify-between items-center">
-                <span className="text-emerald-600 text-sm font-medium">Ventilatori Necessari</span>
-                <span className="text-2xl font-bold">{fansNeededSummer}</span>
+              <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Tipo Ventilazione</label>
+              <div className="flex p-1 bg-slate-100 rounded-xl">
+                <button 
+                  onClick={() => updateParam({ ventilationType: 'longitudinal' })}
+                  className={`flex-1 py-2 rounded-lg text-sm font-bold transition-all ${params.ventilationType === 'longitudinal' ? 'bg-white text-emerald-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                >
+                  Longitudinale
+                </button>
+                <button 
+                  onClick={() => updateParam({ ventilationType: 'transversal' })}
+                  className={`flex-1 py-2 rounded-lg text-sm font-bold transition-all ${params.ventilationType === 'transversal' ? 'bg-white text-emerald-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                >
+                  Trasversale
+                </button>
               </div>
-              <div className="flex justify-between items-center">
-                <span className="text-emerald-600 text-sm font-medium">Portata Totale</span>
-                <span className="text-lg font-bold">{actualFlowSummer.toLocaleString()} m³/h</span>
+            </div>
+
+            <div className="bg-slate-50 p-6 rounded-2xl border border-slate-200 flex flex-col justify-center">
+              <span className="text-xs font-bold text-slate-400 uppercase mb-2">Area Sezione Calcolata</span>
+              <div className="flex items-baseline gap-2">
+                <span className="text-2xl font-bold text-slate-900">{currentArea.toLocaleString('it-IT', { maximumFractionDigits: 1 })}</span>
+                <span className="text-xs font-medium text-slate-400">m²</span>
               </div>
-              <div className="flex justify-between items-center">
-                <span className="text-emerald-600 text-sm font-medium">Velocità Aria</span>
-                <span className="text-lg font-bold">{airVelocitySummer.toFixed(2)} m/s</span>
-              </div>
+              <p className="text-[10px] text-slate-400 mt-2">Dati derivati dal modulo Struttura Edilizia</p>
             </div>
           </div>
 
-          <div className="bg-white/50 p-8 rounded-2xl border border-slate-200 shadow-sm space-y-6">
-            <div className="flex items-center gap-3 border-b border-slate-100 pb-4">
-              <Zap className="text-emerald-600" size={20} />
-              <h3 className="text-lg font-extrabold text-slate-900 font-montserrat">Consumi energetici</h3>
-            </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-slate-100">
+            <ResultCard 
+              label="Velocità Aria Inverno"
+              value={airVelocityWinter.toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              unit="m/s"
+              description="Velocità calcolata sulla sezione trasversale/longitudinale"
+            />
+            <ResultCard 
+              label="Velocità Aria Estate"
+              value={airVelocitySummer.toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              unit="m/s"
+              description="Velocità calcolata sulla sezione trasversale/longitudinale"
+            />
+          </div>
+        </div>
 
-            <div className="space-y-4">
-              <ResultCard 
-                label="Consumo Estate"
-                value={energySummer}
-                unit="kWh/giorno"
-                description="Basato su 24h di funzionamento continuo"
-              />
-              <ResultCard 
-                label="Consumo Inverno"
-                value={energyWinter}
-                unit="kWh/giorno"
-                description={params.useInverter ? "Modulazione continua" : `Intermittenza: ${winterMinutesPerHour.toFixed(1)} min/ora`}
-              />
-              <div className="p-4 bg-slate-50 rounded-xl border border-slate-100">
-                <p className="text-[10px] text-slate-400 font-medium leading-relaxed">
-                  * Il consumo è calcolato considerando un rendimento medio del motore trifase pari a 0.85. 
-                  In modalità inverter, la potenza varia con il cubo della velocità.
-                </p>
-              </div>
-            </div>
+        {/* Consumi energetici */}
+        <div className="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm space-y-6">
+          <div className="flex items-center gap-3 border-b border-slate-100 pb-4">
+            <Zap className="text-emerald-600" size={20} />
+            <h3 className="text-lg font-extrabold text-slate-900 font-montserrat">Consumi energetici</h3>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <ResultCard 
+              label="Consumo Inverno"
+              value={energyWinter.toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              unit="kWh/giorno"
+              description={params.useInverter ? "Modulazione continua" : `Intermittenza: ${winterMinutesPerHour.toLocaleString('it-IT', { maximumFractionDigits: 1 })} min/ora`}
+            />
+            <ResultCard 
+              label="Consumo Estate"
+              value={energySummer.toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              unit="kWh/giorno"
+              description="Basato su 24h di funzionamento continuo"
+            />
+          </div>
+          <div className="p-4 bg-slate-50 rounded-xl border border-slate-100">
+            <p className="text-[10px] text-slate-400 font-medium leading-relaxed">
+              * Il consumo è calcolato considerando un rendimento medio del motore trifase pari a 0.85. 
+              In modalità inverter, la potenza varia con il cubo della velocità.
+            </p>
           </div>
         </div>
       </div>

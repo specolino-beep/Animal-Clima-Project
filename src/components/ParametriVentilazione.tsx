@@ -119,20 +119,23 @@ export function ParametriVentilazione({
               <div className="h-48 w-full">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart
+                    layout="vertical"
                     data={[
                       { name: 'Portata per CO2', value: vInvCO2, color: '#0891b2' },
-                      { name: 'Portata per H2O', value: vInvH2O, color: '#2563eb' }
+                      { name: 'Portata per H2O', value: vInvH2O, color: '#d97706' }
                     ]}
-                    margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                    margin={{ top: 20, right: 120, left: 40, bottom: 20 }}
                   >
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                    <XAxis 
+                    <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#f1f5f9" />
+                    <XAxis type="number" hide />
+                    <YAxis 
                       dataKey="name" 
+                      type="category" 
                       axisLine={false} 
                       tickLine={false} 
-                      tick={{ fill: '#64748b', fontSize: 12, fontWeight: 600 }}
+                      tick={{ fill: '#64748b', fontSize: 13, fontWeight: 700 }}
+                      width={130}
                     />
-                    <YAxis hide />
                     <Tooltip 
                       cursor={{ fill: '#f8fafc' }}
                       contentStyle={{ 
@@ -143,14 +146,15 @@ export function ParametriVentilazione({
                       }}
                       formatter={(value: number) => [value.toLocaleString('it-IT', { maximumFractionDigits: 1 }) + ' m³/h', 'Portata']}
                     />
-                    <Bar dataKey="value" radius={[8, 8, 0, 0]} barSize={60}>
+                    <Bar dataKey="value" radius={[0, 8, 8, 0]} barSize={40}>
                       <Cell fill="#0891b2" />
-                      <Cell fill="#2563eb" />
+                      <Cell fill="#d97706" />
                       <LabelList 
                         dataKey="value" 
-                        position="top" 
+                        position="right" 
+                        offset={15}
                         formatter={(v: number) => v.toLocaleString('it-IT', { maximumFractionDigits: 1 }) + ' m³/h'}
-                        style={{ fill: '#334155', fontSize: 11, fontWeight: 700, fontFamily: 'monospace' }}
+                        style={{ fill: '#0f172a', fontSize: 18, fontWeight: 900, fontFamily: 'monospace' }}
                       />
                     </Bar>
                   </BarChart>
@@ -216,30 +220,22 @@ export function ParametriVentilazione({
           <div className="h-64 w-full lg:w-2/3">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart
+                layout="vertical"
                 data={[
                   { name: 'Inverno', value: vMinPerPesoVivo, color: '#0891b2' },
                   { name: 'Estate', value: vEstPerPesoVivo, color: '#d97706' }
                 ]}
-                margin={{ top: 20, right: 30, left: 20, bottom: 20 }}
+                margin={{ top: 20, right: 100, left: 20, bottom: 20 }}
               >
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                <XAxis 
-                  dataKey="name" 
-                  axisLine={false} 
-                  tickLine={false} 
-                  tick={{ fill: '#64748b', fontSize: 12, fontWeight: 600 }}
-                  dy={10}
-                />
+                <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#f1f5f9" />
+                <XAxis type="number" hide />
                 <YAxis 
+                  dataKey="name" 
+                  type="category" 
                   axisLine={false} 
                   tickLine={false} 
-                  tick={{ fill: '#64748b', fontSize: 10 }}
-                  label={{ 
-                    value: 'm³/h per kg PV', 
-                    angle: -90, 
-                    position: 'insideLeft',
-                    style: { fill: '#94a3b8', fontSize: 10, fontWeight: 600, textTransform: 'uppercase' }
-                  }}
+                  tick={{ fill: '#64748b', fontSize: 13, fontWeight: 700 }}
+                  width={80}
                 />
                 <Tooltip 
                   cursor={{ fill: '#f8fafc' }}
@@ -251,7 +247,7 @@ export function ParametriVentilazione({
                   }}
                   formatter={(value: number) => [value.toLocaleString('it-IT', { maximumFractionDigits: 3 }) + ' m³/h/kg', 'Portata']}
                 />
-                <Bar dataKey="value" radius={[8, 8, 0, 0]} barSize={60}>
+                <Bar dataKey="value" radius={[0, 8, 8, 0]} barSize={40}>
                   {
                     [
                       { name: 'Inverno', value: vMinPerPesoVivo, color: '#0891b2' },
@@ -262,9 +258,10 @@ export function ParametriVentilazione({
                   }
                   <LabelList 
                     dataKey="value" 
-                    position="top" 
-                    formatter={(v: number) => v.toLocaleString('it-IT', { maximumFractionDigits: 3 })}
-                    style={{ fill: '#334155', fontSize: 12, fontWeight: 700, fontFamily: 'monospace' }}
+                    position="right" 
+                    offset={15}
+                    formatter={(v: number) => v.toLocaleString('it-IT', { maximumFractionDigits: 3 }) + ' m³/h/kg'}
+                    style={{ fill: '#0f172a', fontSize: 16, fontWeight: 900, fontFamily: 'monospace' }}
                   />
                 </Bar>
               </BarChart>

@@ -522,7 +522,7 @@ export default function App() {
                   onClick={() => setCurrentView('results')}
                 />
                 <ModuleCard 
-                  title="6. Ventilazione Naturale"
+                  title="6. Ventilazione Naturale (Invernale)"
                   description="Dimensiona le aperture d'uscita per l'effetto camino invernale."
                   icon={<Wind className="text-emerald-600" size={32} />}
                   onClick={() => setCurrentView('natural_vent')}
