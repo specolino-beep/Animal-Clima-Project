@@ -120,6 +120,16 @@ export function RisultatiBilancio({
               labelClassName="text-slate-800"
               valueClassName="text-slate-800"
             />
+            <div className="mt-2 pt-4 border-t border-slate-200">
+              <ResultCard 
+                icon={<ArrowDownRight className="text-rose-700" size={18} />}
+                label="Dispersioni Totali"
+                value={(structureHeatLoss + floorHeatLoss + ventilationHeatLoss).toLocaleString('it-IT', { maximumFractionDigits: 1 })}
+                unit="W"
+                labelClassName="text-rose-700 font-bold"
+                valueClassName="text-rose-700 font-black"
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -143,8 +153,8 @@ export function RisultatiBilancio({
             </div>
             <p className="opacity-80 text-sm leading-relaxed max-w-md font-medium">
               {heatBalance >= 0 
-                ? "Il calore prodotto dagli animali è sufficiente a coprire le dispersioni. Non è necessario riscaldamento supplementare."
-                : "Le dispersioni superano il calore prodotto. È necessario prevedere un sistema di riscaldamento o migliorare l'isolamento."}
+                ? "Il calore prodotto dagli animali è sufficiente a coprire le dispersioni. Non è necessario riscaldamento supplementare. Deve essere adottata la ventilazione aggiuntiva fino ad asportare il calore in eccesso."
+                : "Le dispersioni superano il calore prodotto. NB: Non è possibile ridurre le dispersioni che avevngono attraverso la ventilazione minima. È necessario prevedere un sistema di riscaldamento artificiale o migliorare l'isolamento."}
             </p>
           </div>
           {heatBalance > 0 && (

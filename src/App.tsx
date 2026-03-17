@@ -23,7 +23,7 @@ import {
   calculateRequiredInsulationThickness,
   calculateFuelConsumption
 } from './utils/calculations';
-import { View, BuildingElement, Layer, ForcedVentParams, BuildingDimensions, OpeningDimensions } from './types';
+import { View, BuildingElement, Layer, ForcedVentParams, BuildingDimensions, OpeningDimensions, CoolingParams } from './types';
 
 // Components
 import { ModuleCard } from './components/Common';
@@ -34,6 +34,7 @@ import { StrutturaEdilizia } from './components/StrutturaEdilizia';
 import { RisultatiBilancio } from './components/RisultatiBilancio';
 import { VentilazioneNaturale } from './components/VentilazioneNaturale';
 import { VentilazioneForzata } from './components/VentilazioneForzata';
+import { SistemiRaffrescamento } from './components/SistemiRaffrescamento';
 
 export default function App() {
   const [currentView, setCurrentView] = useState<View>('home');
@@ -53,6 +54,7 @@ export default function App() {
     { id: 'results', label: 'Bilancio Termico', icon: <Calculator size={18} /> },
     { id: 'natural_vent', label: 'Ventilazione Naturale', icon: <Wind size={18} /> },
     { id: 'forced_vent', label: 'Ventilazione Forzata', icon: <Wind size={18} /> },
+    { id: 'cooling', label: 'Sistemi di Raffrescamento', icon: <Wind size={18} /> },
   ];
 
   // Animal State
@@ -162,6 +164,8 @@ export default function App() {
   const [naturalVentParams, setNaturalVentParams] = useState({
     hOut: 6,
     hIn: 1.5,
+    hExtra: 0,
+    alpha: 0.5,
     ventType: 'cupolino' as 'cupolino' | 'camini',
     buildingLength: 50,
     chimneyDiameter: 0.6
@@ -184,6 +188,23 @@ export default function App() {
     ridgeHeight: 5.5,
     eaveHeight: 3.5
   });
+
+  const [coolingParams, setCoolingParams] = useState<CoolingParams>({
+    flowType: 'horizontal',
+    selectedFanId: 'h4',
+    targetVelocity: 2.0,
+    numRows: 3,
+    rowLength: 62,
+    hoursPerDay: 12
+  });
+
+  // Sync cooling parameters with building length
+  useEffect(() => {
+    setCoolingParams(prev => ({
+      ...prev,
+      rowLength: buildingDimensions.length
+    }));
+  }, [buildingDimensions.length]);
 
   // Opening Dimensions State
   const [openingDimensions, setOpeningDimensions] = useState<OpeningDimensions>({
@@ -533,6 +554,12 @@ export default function App() {
                   icon={<Wind className="text-emerald-600" size={32} />}
                   onClick={() => setCurrentView('forced_vent')}
                 />
+                <ModuleCard 
+                  title="8. Sistemi di Raffrescamento"
+                  description="Dimensiona sistemi convettivi (Wind-Chill) per il comfort termico estivo."
+                  icon={<Wind className="text-emerald-600" size={32} />}
+                  onClick={() => setCurrentView('cooling')}
+                />
               </div>
             </motion.div>
           )}
@@ -655,6 +682,20 @@ export default function App() {
               heatBalance={heatBalance}
               setCurrentView={setCurrentView}
               buildingDimensions={buildingDimensions}
+              numHeads={numHeads}
+              avgWeight={avgWeight}
+            />
+          )}
+
+          {currentView === 'cooling' && (
+            <SistemiRaffrescamento 
+              params={coolingParams}
+              setParams={setCoolingParams}
+              setCurrentView={setCurrentView}
+              buildingDimensions={buildingDimensions}
+              numHeads={numHeads}
+              avgWeight={avgWeight}
+              selectedAnimalName={selectedAnimalName}
             />
           )}
         </AnimatePresence>

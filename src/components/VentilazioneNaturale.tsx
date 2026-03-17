@@ -36,7 +36,7 @@ export function VentilazioneNaturale({
   // altrimenti è la ventilazione totale (minima + addizionale) se il bilancio è positivo.
   const requiredFlowRate = heatBalance <= 0 ? vMinProgetto : vTotalWinter;
 
-  const velocity = calculateNaturalVentVelocity(params.hOut, params.hIn, indoorTemp, winterTemp);
+  const velocity = calculateNaturalVentVelocity(params.hOut, params.hIn, indoorTemp, winterTemp, params.hExtra, params.alpha);
   const totalArea = calculateRequiredOutletArea(requiredFlowRate, velocity);
   
   const cupolinoWidth = calculateCupolinoWidth(totalArea, params.buildingLength);
@@ -50,26 +50,30 @@ export function VentilazioneNaturale({
       className="space-y-8"
     >
       <section className="bg-slate-800 rounded-2xl border border-slate-700 p-8 shadow-sm">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div>
-            <h2 className="text-2xl font-extrabold text-white mb-2 font-montserrat">Ventilazione Naturale (Invernale)</h2>
-            <p className="text-emerald-300 font-medium">Calcolo effetto camino per il dimensionamento delle aperture d'uscita.</p>
-          </div>
-          <div className="bg-emerald-500/20 border border-emerald-500/30 px-4 py-2 rounded-xl">
-            <span className="text-xs font-bold text-emerald-300 uppercase tracking-wider block mb-1">Portata Necessaria (di progetto)</span>
-            <span className="text-xl font-black text-white">{requiredFlowRate.toLocaleString('it-IT')} <span className="text-sm font-medium opacity-70">m³/h</span></span>
-          </div>
+        <div>
+          <h2 className="text-2xl font-extrabold text-white mb-2 font-montserrat">Ventilazione Naturale (Invernale)</h2>
+          <p className="text-emerald-300 font-medium">Calcolo effetto camino per il dimensionamento delle aperture d'uscita.</p>
         </div>
       </section>
 
       <div className="max-w-5xl mx-auto space-y-8">
+        <div className="bg-emerald-500/10 border border-emerald-500/20 p-6 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <span className="text-xs font-bold text-emerald-700 uppercase tracking-wider block mb-1">Portata Necessaria (di progetto)</span>
+            <p className="text-sm text-emerald-600/80 font-medium">Volume d'aria da asportare per mantenere il bilancio termico o la qualità dell'aria.</p>
+          </div>
+          <div className="bg-white px-6 py-3 rounded-xl shadow-sm border border-emerald-100">
+            <span className="text-2xl font-black text-emerald-700">{requiredFlowRate.toLocaleString('it-IT')} <span className="text-sm font-medium opacity-70">m³/h</span></span>
+          </div>
+        </div>
+
         <section className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
           <div className="flex items-center gap-2 mb-6">
             <Ruler className="text-emerald-600" size={20} />
             <h3 className="font-extrabold text-slate-800 font-montserrat">Geometria e Quote</h3>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <InputCard 
               label="Quota Uscita (Hout)"
               value={params.hOut}
@@ -83,6 +87,13 @@ export function VentilazioneNaturale({
               readOnly
               unit="m"
               description="Calcolata: Altezza gronda - 1/2 Altezza finestre."
+            />
+            <InputCard 
+              label="Innalzamento Quota Uscita"
+              value={params.hExtra}
+              onChange={(v) => setParams(p => ({ ...p, hExtra: v }))}
+              unit="m"
+              description="Eventuale rialzo di cupolino o camini rispetto al colmo."
             />
           </div>
         </section>
@@ -134,6 +145,34 @@ export function VentilazioneNaturale({
                 description="Diametro interno dei camini di estrazione."
               />
             )}
+
+            <div className="pt-4 border-t border-slate-100">
+              <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-4">Coefficiente di Efflusso (α)</label>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {[
+                  { value: 0.5, label: 'Standard (0,5)', desc: 'Cupolino continuo, finestre o camini con angoli netti' },
+                  { value: 0.6, label: 'Migliorato (0,6)', desc: 'Progettazione accurata delle aperture di uscita' },
+                  { value: 0.65, label: 'Ottimizzato (0,65)', desc: 'Aperture con deflettori fluidodinamici' }
+                ].map((opt) => (
+                  <button
+                    key={opt.value}
+                    onClick={() => setParams(p => ({ ...p, alpha: opt.value }))}
+                    className={`p-4 rounded-xl border-2 text-left transition-all ${
+                      params.alpha === opt.value 
+                        ? 'border-emerald-500 bg-emerald-50' 
+                        : 'border-slate-100 bg-slate-50 hover:border-slate-200'
+                    }`}
+                  >
+                    <div className={`font-bold text-sm mb-1 ${params.alpha === opt.value ? 'text-emerald-700' : 'text-slate-700'}`}>
+                      {opt.label}
+                    </div>
+                    <div className="text-[10px] text-slate-500 leading-tight">
+                      {opt.desc}
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
         </section>
 
@@ -184,7 +223,7 @@ export function VentilazioneNaturale({
         <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
           <h4 className="text-slate-800 font-bold mb-3 text-sm">Note Tecniche</h4>
           <ul className="text-xs text-slate-500 space-y-2 list-disc pl-4">
-            <li>Coefficiente di efflusso (Alfa) impostato a 0.5</li>
+            <li>Coefficiente di efflusso (α): {params.alpha.toLocaleString('it-IT')}</li>
             <li>Il calcolo assume un bilancio di pressione equilibrato</li>
             <li>In estate, l'effetto camino è trascurabile rispetto alla ventilazione forzata o trasversale</li>
             <li>Assicurarsi che le aperture d'ingresso siano almeno pari a quelle d'uscita</li>

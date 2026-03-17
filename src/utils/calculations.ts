@@ -129,16 +129,15 @@ export function calculateFuelConsumption(
 /**
  * Calcola la velocità dell'aria per effetto camino (m/s)
  */
-export function calculateNaturalVentVelocity(hOut: number, hIn: number, tIn: number, tOut: number): number {
-  const ALFA = 0.5;
+export function calculateNaturalVentVelocity(hOut: number, hIn: number, tIn: number, tOut: number, hExtra: number = 0, alpha: number = 0.5): number {
   const G = 9.8;
-  const deltaH = hOut - hIn;
+  const deltaH = (hOut + hExtra) - hIn;
   const deltaT = tIn - tOut;
 
   if (deltaH <= 0 || deltaT <= 0) return 0;
 
   const inner = (2 * G * deltaH * deltaT) / (tOut + 273);
-  return ALFA * Math.sqrt(inner);
+  return alpha * Math.sqrt(inner);
 }
 
 /**
@@ -208,4 +207,26 @@ export function calculateForcedVentEnergy(
 export function calculateAirVelocity(flowRate: number, area: number): number {
   if (area <= 0) return 0;
   return flowRate / (area * 3600);
+}
+
+/**
+ * Calcola la gittata utile di un ventilatore (m)
+ */
+export function calculateFanThrow(diameter: number, multiplier: number): number {
+  return diameter * multiplier;
+}
+
+/**
+ * Calcola il numero di ventilatori necessari per fila
+ */
+export function calculateFansPerRow(rowLength: number, throwDistance: number): number {
+  if (throwDistance <= 0) return 0;
+  return Math.max(1, Math.ceil(rowLength / throwDistance));
+}
+
+/**
+ * Calcola il consumo energetico giornaliero (kWh/giorno)
+ */
+export function calculateCoolingEnergy(numFans: number, fanPower: number, hours: number): number {
+  return numFans * fanPower * hours;
 }

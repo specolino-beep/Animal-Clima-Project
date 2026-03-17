@@ -84,12 +84,23 @@ export interface OpeningDimensions {
   };
 }
 
-export type View = 'home' | 'animals' | 'climate' | 'ventilation' | 'structure' | 'results' | 'natural_vent' | 'forced_vent' | 'summary';
+export type View = 'home' | 'animals' | 'climate' | 'ventilation' | 'structure' | 'results' | 'natural_vent' | 'forced_vent' | 'cooling' | 'summary';
 
 export interface NaturalVentParams {
   hOut: number; // Altezza al colmo / uscita (m)
   hIn: number;  // Quota media ingresso (m)
+  hExtra: number; // Innalzamento quota uscita (m)
+  alpha: number; // Coefficiente di efflusso
   ventType: 'cupolino' | 'camini';
   buildingLength: number; // Lunghezza edificio (m)
   chimneyDiameter: number; // Diametro camini (m)
+}
+
+export interface CoolingParams {
+  flowType: 'horizontal' | 'vertical';
+  selectedFanId: string;
+  targetVelocity: number; // m/s
+  numRows: number;
+  rowLength: number;
+  hoursPerDay: number;
 }

@@ -10,6 +10,17 @@ import {
   Layout
 } from 'lucide-react';
 import { motion } from 'motion/react';
+import { 
+  BarChart, 
+  Bar, 
+  XAxis, 
+  YAxis, 
+  CartesianGrid, 
+  Tooltip, 
+  ResponsiveContainer, 
+  Cell,
+  LabelList
+} from 'recharts';
 import { ForcedVentParams, FanEntry, View, BuildingDimensions } from '../types';
 import { fanDatabase } from '../data/fans';
 import { 
@@ -28,6 +39,8 @@ interface VentilazioneForzataProps {
   heatBalance: number;
   setCurrentView: (view: View) => void;
   buildingDimensions: BuildingDimensions;
+  numHeads: number;
+  avgWeight: number;
 }
 
 export function VentilazioneForzata({ 
@@ -38,7 +51,9 @@ export function VentilazioneForzata({
   vTotalWinter,
   heatBalance,
   setCurrentView,
-  buildingDimensions
+  buildingDimensions,
+  numHeads,
+  avgWeight
 }: VentilazioneForzataProps) {
   
   const selectedFan = useMemo(() => {
@@ -97,6 +112,15 @@ export function VentilazioneForzata({
   const currentArea = params.ventilationType === 'longitudinal' ? areaLongitudinale : areaTrasversale;
   const airVelocitySummer = useMemo(() => calculateAirVelocity(actualFlowSummer, currentArea), [actualFlowSummer, currentArea]);
   const airVelocityWinter = useMemo(() => calculateAirVelocity(targetWinterFlow, currentArea), [targetWinterFlow, currentArea]);
+
+  // Valori Unitari Consumi (convertiti in Wh)
+  const totalLiveWeight = numHeads * avgWeight;
+  
+  const energyWinterPerCapo = useMemo(() => numHeads > 0 ? (energyWinter * 1000) / numHeads : 0, [energyWinter, numHeads]);
+  const energyWinterPerPesoVivo = useMemo(() => totalLiveWeight > 0 ? (energyWinter * 1000) / totalLiveWeight : 0, [energyWinter, totalLiveWeight]);
+  
+  const energySummerPerCapo = useMemo(() => numHeads > 0 ? (energySummer * 1000) / numHeads : 0, [energySummer, numHeads]);
+  const energySummerPerPesoVivo = useMemo(() => totalLiveWeight > 0 ? (energySummer * 1000) / totalLiveWeight : 0, [energySummer, totalLiveWeight]);
 
   const updateParam = (updates: Partial<ForcedVentParams>) => {
     setParams(prev => ({ ...prev, ...updates }));
@@ -354,6 +378,115 @@ export function VentilazioneForzata({
               description="Basato su 24h di funzionamento continuo"
             />
           </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6 border-t border-slate-100">
+            <div className="bg-slate-50 p-6 rounded-2xl border border-slate-200">
+              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-4">Consumo Unitario per Capo (Wh/giorno/capo)</span>
+              <div className="h-48 w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart
+                    layout="vertical"
+                    data={[
+                      { name: 'Inverno', value: energyWinterPerCapo, color: '#0891b2' },
+                      { name: 'Estate', value: energySummerPerCapo, color: '#d97706' }
+                    ]}
+                    margin={{ top: 5, right: 80, left: 20, bottom: 5 }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#e2e8f0" />
+                    <XAxis type="number" hide />
+                    <YAxis 
+                      dataKey="name" 
+                      type="category" 
+                      axisLine={false} 
+                      tickLine={false} 
+                      tick={{ fill: '#64748b', fontSize: 12, fontWeight: 700 }}
+                      width={70}
+                    />
+                    <Tooltip 
+                      cursor={{ fill: '#f1f5f9' }}
+                      contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                      formatter={(v: number) => [v.toLocaleString('it-IT', { maximumFractionDigits: 1 }) + ' Wh/g/capo', 'Consumo']}
+                    />
+                    <Bar dataKey="value" radius={[0, 4, 4, 0]} barSize={30}>
+                      <Cell fill="#0891b2" />
+                      <Cell fill="#d97706" />
+                      <LabelList 
+                        dataKey="value" 
+                        position="right" 
+                        offset={10}
+                        formatter={(v: number) => v.toLocaleString('it-IT', { maximumFractionDigits: 1 })}
+                        style={{ fill: '#0f172a', fontSize: 12, fontWeight: 800 }}
+                      />
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+
+            <div className="bg-slate-50 p-6 rounded-2xl border border-slate-200">
+              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-4">Consumo Unitario per kg PV (Wh/giorno/kg)</span>
+              <div className="h-48 w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart
+                    layout="vertical"
+                    data={[
+                      { name: 'Inverno', value: energyWinterPerPesoVivo, color: '#0891b2' },
+                      { name: 'Estate', value: energySummerPerPesoVivo, color: '#d97706' }
+                    ]}
+                    margin={{ top: 5, right: 80, left: 20, bottom: 5 }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#e2e8f0" />
+                    <XAxis type="number" hide />
+                    <YAxis 
+                      dataKey="name" 
+                      type="category" 
+                      axisLine={false} 
+                      tickLine={false} 
+                      tick={{ fill: '#64748b', fontSize: 12, fontWeight: 700 }}
+                      width={70}
+                    />
+                    <Tooltip 
+                      cursor={{ fill: '#f1f5f9' }}
+                      contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                      formatter={(v: number) => [v.toLocaleString('it-IT', { maximumFractionDigits: 3 }) + ' Wh/g/kg', 'Consumo']}
+                    />
+                    <Bar dataKey="value" radius={[0, 4, 4, 0]} barSize={30}>
+                      <Cell fill="#0891b2" />
+                      <Cell fill="#d97706" />
+                      <LabelList 
+                        dataKey="value" 
+                        position="right" 
+                        offset={10}
+                        formatter={(v: number) => v.toLocaleString('it-IT', { maximumFractionDigits: 3 })}
+                        style={{ fill: '#0f172a', fontSize: 12, fontWeight: 800 }}
+                      />
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex flex-col lg:flex-row gap-6 items-center bg-emerald-500/5 p-6 rounded-2xl border border-emerald-500/10">
+            <div className="flex-1 text-center lg:text-left">
+              <span className="text-[10px] font-bold text-emerald-700 uppercase tracking-widest block mb-1">Rapporto di Consumo Stagionale</span>
+              <p className="text-sm text-slate-600 font-medium">
+                Confronto tra il fabbisogno energetico estivo (24h) e quello invernale (modulato/intermittente).
+              </p>
+            </div>
+            <div className="bg-white px-8 py-4 rounded-2xl shadow-sm border border-emerald-100 text-center min-w-[200px]">
+              <div className="text-4xl font-black text-emerald-700 font-mono">
+                {energyWinter > 0 
+                  ? `${(energySummer / energyWinter).toLocaleString('it-IT', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}x`
+                  : 'N/A'
+                }
+              </div>
+              <p className="text-[10px] font-bold text-emerald-600 uppercase tracking-tight mt-1">
+                volte superiore in estate
+              </p>
+            </div>
+          </div>
+
           <div className="p-4 bg-slate-50 rounded-xl border border-slate-100">
             <p className="text-[10px] text-slate-400 font-medium leading-relaxed">
               * Il consumo è calcolato considerando un rendimento medio del motore trifase pari a 0.85. 
