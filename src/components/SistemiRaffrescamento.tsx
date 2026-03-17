@@ -360,6 +360,16 @@ export function SistemiRaffrescamento({
             </li>
           </ul>
         </div>
+
+        <div className="flex justify-end mt-8">
+          <button 
+            onClick={() => setCurrentView('soaking')}
+            className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white px-8 py-3 rounded-xl font-bold transition-all shadow-lg shadow-emerald-600/20 group"
+          >
+            Progetta Bagnatura/Nebbia
+            <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
+          </button>
+        </div>
       </div>
     </motion.div>
   );

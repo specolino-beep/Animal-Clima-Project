@@ -84,7 +84,7 @@ export interface OpeningDimensions {
   };
 }
 
-export type View = 'home' | 'animals' | 'climate' | 'ventilation' | 'structure' | 'results' | 'natural_vent' | 'forced_vent' | 'cooling' | 'summary';
+export type View = 'home' | 'animals' | 'climate' | 'ventilation' | 'structure' | 'results' | 'natural_vent' | 'forced_vent' | 'cooling' | 'soaking' | 'summary';
 
 export interface NaturalVentParams {
   hOut: number; // Altezza al colmo / uscita (m)
@@ -103,4 +103,19 @@ export interface CoolingParams {
   numRows: number;
   rowLength: number;
   hoursPerDay: number;
+}
+
+export interface SoakingParams {
+  systemType: 'soaking' | 'fogging';
+  foggingMode: 'grid' | 'fans';
+  nozzlesPerFan: number;
+  nozzleDistance: number; // m
+  nozzleFlowRate: number; // L/min
+  wetTime: number; // min
+  dryTime: number; // min
+  hoursPerDay: number;
+  activationTemp: number; // °C
+  lineLength: number; // m
+  numLines: number;
+  pressure: number; // bar
 }

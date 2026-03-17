@@ -12,7 +12,8 @@ import {
   Building2,
   Menu,
   X,
-  PawPrint
+  PawPrint,
+  Droplets
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
@@ -21,9 +22,12 @@ import {
   calculateVentilationH2O,
   calculateElementThermal,
   calculateRequiredInsulationThickness,
-  calculateFuelConsumption
+  calculateFuelConsumption,
+  calculateFanThrow,
+  calculateFansPerRow
 } from './utils/calculations';
-import { View, BuildingElement, Layer, ForcedVentParams, BuildingDimensions, OpeningDimensions, CoolingParams } from './types';
+import { COOLING_FANS } from './data/coolingFans';
+import { View, BuildingElement, Layer, ForcedVentParams, BuildingDimensions, OpeningDimensions, CoolingParams, SoakingParams } from './types';
 
 // Components
 import { ModuleCard } from './components/Common';
@@ -35,6 +39,7 @@ import { RisultatiBilancio } from './components/RisultatiBilancio';
 import { VentilazioneNaturale } from './components/VentilazioneNaturale';
 import { VentilazioneForzata } from './components/VentilazioneForzata';
 import { SistemiRaffrescamento } from './components/SistemiRaffrescamento';
+import BagnaturaNebulizzazione from './components/BagnaturaNebulizzazione';
 
 export default function App() {
   const [currentView, setCurrentView] = useState<View>('home');
@@ -54,7 +59,9 @@ export default function App() {
     { id: 'results', label: 'Bilancio Termico', icon: <Calculator size={18} /> },
     { id: 'natural_vent', label: 'Ventilazione Naturale', icon: <Wind size={18} /> },
     { id: 'forced_vent', label: 'Ventilazione Forzata', icon: <Wind size={18} /> },
-    { id: 'cooling', label: 'Sistemi di Raffrescamento', icon: <Wind size={18} /> },
+    { id: 'cooling', label: 'Raffrescamento Convettivo', icon: <Wind size={18} /> },
+    { id: 'soaking', label: 'Bagnatura e Nebbia', icon: <Droplets size={18} /> },
+    { id: 'summary', label: 'Riepilogo Progetto', icon: <Calculator size={18} /> },
   ];
 
   // Animal State
@@ -198,11 +205,30 @@ export default function App() {
     hoursPerDay: 12
   });
 
+  const [soakingParams, setSoakingParams] = useState<SoakingParams>({
+    systemType: 'soaking',
+    foggingMode: 'grid',
+    nozzlesPerFan: 6,
+    nozzleDistance: 2.5,
+    nozzleFlowRate: 1.15,
+    wetTime: 2,
+    dryTime: 11,
+    hoursPerDay: 8,
+    activationTemp: 25,
+    lineLength: 62,
+    numLines: 1,
+    pressure: 3
+  });
+
   // Sync cooling parameters with building length
   useEffect(() => {
     setCoolingParams(prev => ({
       ...prev,
       rowLength: buildingDimensions.length
+    }));
+    setSoakingParams(prev => ({
+      ...prev,
+      lineLength: buildingDimensions.length
     }));
   }, [buildingDimensions.length]);
 
@@ -390,6 +416,24 @@ export default function App() {
     return calculateFuelConsumption(heatBalance, selectedFuelName, FUELS_DATABASE);
   }, [heatBalance, selectedFuelName]);
 
+  // Cooling Calculations for Soaking/Fogging
+  const { totalCoolingFans, selectedFanDiameter } = useMemo(() => {
+    const filteredFans = COOLING_FANS.filter(f => f.type === coolingParams.flowType);
+    const selectedFan = filteredFans.find(f => f.id === coolingParams.selectedFanId) || filteredFans[0];
+    if (!selectedFan) return { totalCoolingFans: 0, selectedFanDiameter: 0 };
+
+    const throwMultiplier = coolingParams.targetVelocity <= 1.8 ? 12 : (coolingParams.targetVelocity < 2.5 ? 11 : 10);
+    const usefulThrow = coolingParams.flowType === 'horizontal' 
+      ? calculateFanThrow(selectedFan.diameter, throwMultiplier)
+      : selectedFan.diameter * 4;
+
+    const fansPerRow = calculateFansPerRow(buildingDimensions.length, usefulThrow);
+    return { 
+      totalCoolingFans: fansPerRow * coolingParams.numRows,
+      selectedFanDiameter: selectedFan.diameter
+    };
+  }, [coolingParams, buildingDimensions.length]);
+
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 font-sans">
       {/* Top Navigation / Header */}
@@ -560,6 +604,12 @@ export default function App() {
                   icon={<Wind className="text-emerald-600" size={32} />}
                   onClick={() => setCurrentView('cooling')}
                 />
+                <ModuleCard 
+                  title="9. Bagnatura e Nebulizzazione"
+                  description="Progetta sistemi Soaking e Fogging per il raffrescamento evaporativo diretto."
+                  icon={<Droplets className="text-emerald-600" size={32} />}
+                  onClick={() => setCurrentView('soaking')}
+                />
               </div>
             </motion.div>
           )}
@@ -693,6 +743,21 @@ export default function App() {
               setParams={setCoolingParams}
               setCurrentView={setCurrentView}
               buildingDimensions={buildingDimensions}
+              numHeads={numHeads}
+              avgWeight={avgWeight}
+              selectedAnimalName={selectedAnimalName}
+            />
+          )}
+
+          {currentView === 'soaking' && (
+            <BagnaturaNebulizzazione 
+              params={soakingParams}
+              setParams={setSoakingParams}
+              setCurrentView={setCurrentView}
+              buildingDimensions={buildingDimensions}
+              coolingParams={coolingParams}
+              totalCoolingFans={totalCoolingFans}
+              selectedFanDiameter={selectedFanDiameter}
               numHeads={numHeads}
               avgWeight={avgWeight}
               selectedAnimalName={selectedAnimalName}
