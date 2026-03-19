@@ -225,8 +225,115 @@ export function calculateFansPerRow(rowLength: number, throwDistance: number): n
 }
 
 /**
- * Calcola il consumo energetico giornaliero (kWh/giorno)
+ * Calcola il THI (Temperature Humidity Index) per diverse specie
  */
-export function calculateCoolingEnergy(numFans: number, fanPower: number, hours: number): number {
-  return numFans * fanPower * hours;
+export function calculateTHI(temp: number, rh: number, species: string): number {
+  const rhDecimal = rh / 100;
+  const tF = (1.8 * temp) + 32;
+  
+  if (species.toLowerCase().includes('bovini') || species.toLowerCase().includes('vacche')) {
+    // Formula NRC (1971) per bovini
+    return (1.8 * temp + 32) - (0.55 - 0.0055 * rh) * (1.8 * temp - 26);
+  } else if (species.toLowerCase().includes('avicoli') || species.toLowerCase().includes('polli') || species.toLowerCase().includes('galline')) {
+    // Formula per avicoli
+    return 0.8 * temp + rhDecimal * (temp - 14.4) + 46.4;
+  } else if (species.toLowerCase().includes('conigli')) {
+    // Formula per conigli (spesso simile a bovini o specifica)
+    return temp - (0.55 - 0.0055 * rh) * (temp - 14.5);
+  } else {
+    // Formula standard (Thom, 1959)
+    return (1.8 * temp + 32) - (0.55 - 0.0055 * rh) * (1.8 * temp - 26);
+  }
+}
+
+/**
+ * Calcola il THI corretto per la velocità dell'aria (Adjusted THI)
+ */
+export function calculateAdjustedTHI(thi: number, velocity: number): number {
+  if (velocity <= 0.2) return thi;
+  // Riduzione approssimativa del THI basata sulla velocità dell'aria (Wind Chill effect)
+  // Per i bovini, 1 m/s può ridurre il THI percepito di circa 2-3 unità
+  return thi - (1.5 * Math.sqrt(velocity));
+}
+
+/**
+ * Calcola la temperatura a bulbo umido (°C) usando l'approssimazione di Stull
+ */
+export function calculateWetBulb(temp: number, rh: number): number {
+  const T = temp;
+  const RH = rh;
+  
+  const Tw = T * Math.atan(0.151977 * Math.pow(RH + 8.313659, 0.5)) + 
+             Math.atan(T + RH) - 
+             Math.atan(RH - 1.676331) + 
+             0.00391838 * Math.pow(RH, 1.5) * Math.atan(0.023101 * RH) - 
+             4.686035;
+             
+  return Tw;
+}
+
+/**
+ * Calcola i risultati del raffrescamento adiabatico
+ */
+export function calculateAdiabaticCooling(temp: number, rh: number, efficiency: number) {
+  const Tw = calculateWetBulb(temp, rh);
+  const deltaT = (temp - Tw) * (efficiency / 100);
+  const finalTemp = temp - deltaT;
+  
+  // In un processo adiabatico l'entalpia è costante.
+  // Possiamo approssimare l'umidità finale sapendo che il bulbo umido rimane costante.
+  // Per semplicità e stabilità, calcoliamo l'umidità relativa finale che corrisponderebbe 
+  // alla stessa temperatura a bulbo umido.
+  
+  // Cerchiamo l'RH finale che con finalTemp dà Tw
+  let finalRH = rh;
+  let minDiff = 999;
+  for (let r = rh; r <= 100; r += 0.1) {
+    const testTw = calculateWetBulb(finalTemp, r);
+    const diff = Math.abs(testTw - Tw);
+    if (diff < minDiff) {
+      minDiff = diff;
+      finalRH = r;
+    } else if (diff > minDiff) {
+      break;
+    }
+  }
+
+  return { finalTemp, finalRH, wetBulb: Tw };
+}
+
+/**
+ * Calcola il consumo di acqua per evaporazione (L/h)
+ */
+export function calculatePadWaterConsumption(
+  airflow: number, 
+  tempIn: number, 
+  rhIn: number, 
+  tempOut: number, 
+  rhOut: number
+): number {
+  // Densità aria approssimata
+  const density = 1.2; 
+  const massFlow = airflow * density; // kg/h
+  
+  // Calcolo rapporto di mescolanza (kg/kg)
+  const getMixingRatio = (T: number, RH: number) => {
+    const T_kelvin = T + 273.16;
+    const inner = (-7511.52 / T_kelvin) + 89.63121 + (0.02399897 * T_kelvin) - (0.000011654551 * Math.pow(T_kelvin, 2)) - (0.000000012810336 * Math.pow(T_kelvin, 3)) + (0.00000000002099845 * Math.pow(T_kelvin, 4)) - (12.150799 * Math.log(T_kelvin));
+    const Psat = Math.exp(inner) * 7.5;
+    return (0.62198 * (RH / 100) * Psat) / (760 - ((RH / 100) * Psat));
+  };
+
+  const xIn = getMixingRatio(tempIn, rhIn);
+  const xOut = getMixingRatio(tempOut, rhOut);
+  
+  const waterMass = massFlow * (xOut - xIn); // kg/h = L/h
+  return Math.max(0, waterMass);
+}
+
+/**
+ * Calcola il consumo energetico per il raffrescamento
+ */
+export function calculateCoolingEnergy(power: number, hours: number, days: number): number {
+  return (power * hours * days) / 1000; // kWh
 }

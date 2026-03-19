@@ -84,7 +84,25 @@ export interface OpeningDimensions {
   };
 }
 
-export type View = 'home' | 'animals' | 'climate' | 'ventilation' | 'structure' | 'results' | 'natural_vent' | 'forced_vent' | 'cooling' | 'soaking' | 'summary';
+export type View = 'home' | 'animals' | 'climate' | 'ventilation' | 'structure' | 'results' | 'natural_vent' | 'forced_vent' | 'heat_stress' | 'cooling' | 'soaking' | 'panels' | 'summary';
+
+export interface HeatStressParams {
+  indoorTemp: number;
+  indoorRH: number;
+  airVelocity: number;
+  useMeasuredParams: boolean;
+  useForcedVentVelocity: boolean;
+}
+
+export interface EvaporativePanelParams {
+  panelType: 'cellulose' | 'plastic';
+  thickness: number; // mm
+  height: number; // m
+  length: number; // m
+  airVelocity: number; // m/s
+  waterFlowRate: number; // L/min/m
+  hoursPerDay: number;
+}
 
 export interface NaturalVentParams {
   hOut: number; // Altezza al colmo / uscita (m)

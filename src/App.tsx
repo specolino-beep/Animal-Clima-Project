@@ -13,9 +13,12 @@ import {
   Menu,
   X,
   PawPrint,
-  Droplets
+  Droplets,
+  AlertTriangle,
+  Layout
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { fanDatabase } from './data/fans';
 import { 
   calculateSpecificHumidity, 
   calculateVentilationCO2, 
@@ -24,10 +27,12 @@ import {
   calculateRequiredInsulationThickness,
   calculateFuelConsumption,
   calculateFanThrow,
-  calculateFansPerRow
+  calculateFansPerRow,
+  calculateFansNeeded,
+  calculateAirVelocity
 } from './utils/calculations';
 import { COOLING_FANS } from './data/coolingFans';
-import { View, BuildingElement, Layer, ForcedVentParams, BuildingDimensions, OpeningDimensions, CoolingParams, SoakingParams } from './types';
+import { View, BuildingElement, Layer, ForcedVentParams, BuildingDimensions, OpeningDimensions, CoolingParams, SoakingParams, HeatStressParams, EvaporativePanelParams } from './types';
 
 // Components
 import { ModuleCard } from './components/Common';
@@ -38,8 +43,10 @@ import { StrutturaEdilizia } from './components/StrutturaEdilizia';
 import { RisultatiBilancio } from './components/RisultatiBilancio';
 import { VentilazioneNaturale } from './components/VentilazioneNaturale';
 import { VentilazioneForzata } from './components/VentilazioneForzata';
-import { SistemiRaffrescamento } from './components/SistemiRaffrescamento';
-import BagnaturaNebulizzazione from './components/BagnaturaNebulizzazione';
+import { SistemiRaffrescamentoConvettivi } from './components/SistemiRaffrescamentoConvettivi';
+import { SistemiRaffrescamentoEvaporativo } from './components/SistemiRaffrescamentoEvaporativo';
+import { ValutazioneRischioStress } from './components/ValutazioneRischioStress';
+import { SistemiPannelliEvaporanti } from './components/SistemiPannelliEvaporanti';
 
 export default function App() {
   const [currentView, setCurrentView] = useState<View>('home');
@@ -59,9 +66,10 @@ export default function App() {
     { id: 'results', label: 'Bilancio Termico', icon: <Calculator size={18} /> },
     { id: 'natural_vent', label: 'Ventilazione Naturale', icon: <Wind size={18} /> },
     { id: 'forced_vent', label: 'Ventilazione Forzata', icon: <Wind size={18} /> },
+    { id: 'heat_stress', label: 'Rischio Stress Calore', icon: <AlertTriangle size={18} /> },
     { id: 'cooling', label: 'Raffrescamento Convettivo', icon: <Wind size={18} /> },
-    { id: 'soaking', label: 'Bagnatura e Nebbia', icon: <Droplets size={18} /> },
-    { id: 'summary', label: 'Riepilogo Progetto', icon: <Calculator size={18} /> },
+    { id: 'soaking', label: 'Raffrescamento Evaporativo', icon: <Droplets size={18} /> },
+    { id: 'panels', label: 'Pannelli Evaporanti', icon: <Layout size={18} /> },
   ];
 
   // Animal State
@@ -220,6 +228,61 @@ export default function App() {
     pressure: 3
   });
 
+  const selectedAnimal = useMemo(() => {
+    return ANIMAL_DATABASE.find(a => a.name === selectedAnimalName) || ANIMAL_DATABASE[0];
+  }, [selectedAnimalName]);
+
+  // Sync weight when animal changes
+  useEffect(() => {
+    if (selectedAnimal) {
+      setAvgWeight(selectedAnimal.weight);
+    }
+  }, [selectedAnimal]);
+
+  // Metabolic weight scaling factor (W/Wref)^0.75
+  const weightFactor = useMemo(() => {
+    if (!selectedAnimal || selectedAnimal.weight <= 0 || avgWeight <= 0) return 1;
+    return Math.pow(avgWeight / selectedAnimal.weight, 0.75);
+  }, [selectedAnimal, avgWeight]);
+
+  // Summer Ventilation Calculations
+  const vEstTotale = selectedAnimal.vEstate * numHeads;
+
+  const forcedVentVelocities = useMemo(() => {
+    const selectedFan = forcedVentParams.mode === 'preset' 
+      ? fanDatabase.find(f => f.id === forcedVentParams.selectedFanId) || fanDatabase[0]
+      : forcedVentParams.manualFan || { airflow: 0 };
+    
+    const fansNeededSummer = calculateFansNeeded(vEstTotale, selectedFan.airflow);
+    const actualFlowSummer = fansNeededSummer * selectedFan.airflow;
+    
+    const areaTrasversale = ((buildingDimensions.ridgeHeight + buildingDimensions.eaveHeight) / 2) * buildingDimensions.length;
+    const areaLongitudinale = ((buildingDimensions.ridgeHeight + buildingDimensions.eaveHeight) / 2) * buildingDimensions.width;
+    
+    return {
+      longitudinal: calculateAirVelocity(actualFlowSummer, areaLongitudinale),
+      transversal: calculateAirVelocity(actualFlowSummer, areaTrasversale)
+    };
+  }, [forcedVentParams, vEstTotale, buildingDimensions]);
+
+  const [heatStressParams, setHeatStressParams] = useState<HeatStressParams>({
+    indoorTemp: 30,
+    indoorRH: 50,
+    airVelocity: 0.2,
+    useMeasuredParams: false,
+    useForcedVentVelocity: true
+  });
+
+  const [evaporativePanelParams, setEvaporativePanelParams] = useState<EvaporativePanelParams>({
+    panelType: 'cellulose',
+    thickness: 100,
+    height: 1.0,
+    length: 10,
+    airVelocity: 1.5,
+    waterFlowRate: 6,
+    hoursPerDay: 8
+  });
+
   // Sync cooling parameters with building length
   useEffect(() => {
     setCoolingParams(prev => ({
@@ -275,23 +338,6 @@ export default function App() {
     }));
   }, [openingDimensions, buildingDimensions]);
 
-  const selectedAnimal = useMemo(() => {
-    return ANIMAL_DATABASE.find(a => a.name === selectedAnimalName) || ANIMAL_DATABASE[0];
-  }, [selectedAnimalName]);
-
-  // Sync weight when animal changes
-  useEffect(() => {
-    if (selectedAnimal) {
-      setAvgWeight(selectedAnimal.weight);
-    }
-  }, [selectedAnimal]);
-
-  // Metabolic weight scaling factor (W/Wref)^0.75
-  const weightFactor = useMemo(() => {
-    if (!selectedAnimal || selectedAnimal.weight <= 0 || avgWeight <= 0) return 1;
-    return Math.pow(avgWeight / selectedAnimal.weight, 0.75);
-  }, [selectedAnimal, avgWeight]);
-
   const calculateAnimalTotal = (value: number) => {
     return (value * numHeads * weightFactor).toLocaleString('it-IT', { maximumFractionDigits: 2 });
   };
@@ -311,8 +357,6 @@ export default function App() {
   const vMinPerCapo = numHeads > 0 ? vMinProgetto / numHeads : 0;
   const vMinPerPesoVivo = (numHeads > 0 && avgWeight > 0) ? vMinProgetto / (numHeads * avgWeight) : 0;
 
-  // Summer Ventilation Calculations
-  const vEstTotale = selectedAnimal.vEstate * numHeads;
   const vEstPerCapo = selectedAnimal.vEstate;
   const vEstPerPesoVivo = (numHeads > 0 && avgWeight > 0) ? vEstTotale / (numHeads * avgWeight) : 0;
 
@@ -462,7 +506,7 @@ export default function App() {
               {currentView !== 'home' && (
                 <button 
                   onClick={() => setCurrentView('home')}
-                  className="flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white rounded-lg text-sm font-bold hover:bg-emerald-700 transition-all shadow-sm"
+                  className="flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white rounded-lg text-sm font-bold hover:bg-emerald-700 transition-all"
                 >
                   <ArrowLeft size={16} />
                   Torna alla Home
@@ -599,16 +643,28 @@ export default function App() {
                   onClick={() => setCurrentView('forced_vent')}
                 />
                 <ModuleCard 
-                  title="8. Sistemi di Raffrescamento"
+                  title="8. Valutazione Rischio Stress da Calore"
+                  description="Calcola l'indice THI e definisci le strategie di mitigazione per il benessere animale."
+                  icon={<AlertTriangle className="text-emerald-600" size={32} />}
+                  onClick={() => setCurrentView('heat_stress')}
+                />
+                <ModuleCard 
+                  title="9. Sistemi di Raffrescamento Convettivi"
                   description="Dimensiona sistemi convettivi (Wind-Chill) per il comfort termico estivo."
                   icon={<Wind className="text-emerald-600" size={32} />}
                   onClick={() => setCurrentView('cooling')}
                 />
                 <ModuleCard 
-                  title="9. Bagnatura e Nebulizzazione"
+                  title="10. Sistemi di Raffrescamento Evaporativo"
                   description="Progetta sistemi Soaking e Fogging per il raffrescamento evaporativo diretto."
                   icon={<Droplets className="text-emerald-600" size={32} />}
                   onClick={() => setCurrentView('soaking')}
+                />
+                <ModuleCard 
+                  title="11. Sistemi a Pannelli Evaporanti"
+                  description="Dimensiona il sistema di raffrescamento adiabatico (Cooling Pads)."
+                  icon={<Layout className="text-emerald-600" size={32} />}
+                  onClick={() => setCurrentView('panels')}
                 />
               </div>
             </motion.div>
@@ -737,8 +793,21 @@ export default function App() {
             />
           )}
 
+          {currentView === 'heat_stress' && (
+            <ValutazioneRischioStress 
+              params={heatStressParams}
+              setParams={setHeatStressParams}
+              setCurrentView={setCurrentView}
+              selectedAnimalName={selectedAnimalName}
+              summerTemp={summerTemp}
+              summerRH={summerRH}
+              forcedVentVelocities={forcedVentVelocities}
+              forcedVentParams={forcedVentParams}
+            />
+          )}
+
           {currentView === 'cooling' && (
-            <SistemiRaffrescamento 
+            <SistemiRaffrescamentoConvettivi 
               params={coolingParams}
               setParams={setCoolingParams}
               setCurrentView={setCurrentView}
@@ -750,7 +819,7 @@ export default function App() {
           )}
 
           {currentView === 'soaking' && (
-            <BagnaturaNebulizzazione 
+            <SistemiRaffrescamentoEvaporativo 
               params={soakingParams}
               setParams={setSoakingParams}
               setCurrentView={setCurrentView}
@@ -760,6 +829,18 @@ export default function App() {
               selectedFanDiameter={selectedFanDiameter}
               numHeads={numHeads}
               avgWeight={avgWeight}
+              selectedAnimalName={selectedAnimalName}
+            />
+          )}
+
+          {currentView === 'panels' && (
+            <SistemiPannelliEvaporanti 
+              params={evaporativePanelParams}
+              setParams={setEvaporativePanelParams}
+              setCurrentView={setCurrentView}
+              vEstTotale={vEstTotale}
+              summerTemp={summerTemp}
+              summerRH={summerRH}
               selectedAnimalName={selectedAnimalName}
             />
           )}

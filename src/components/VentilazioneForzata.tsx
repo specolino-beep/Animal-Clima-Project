@@ -6,6 +6,7 @@ import {
   Maximize, 
   Minimize, 
   ArrowLeft,
+  ArrowRight,
   Activity,
   Layout
 } from 'lucide-react';
@@ -492,6 +493,23 @@ export function VentilazioneForzata({
               * Il consumo è calcolato considerando un rendimento medio del motore trifase pari a 0.85. 
               In modalità inverter, la potenza varia con il cubo della velocità.
             </p>
+          </div>
+
+          <div className="flex justify-between items-center mt-8">
+            <button 
+              onClick={() => setCurrentView('natural_vent')}
+              className="flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white rounded-lg text-sm font-bold hover:bg-emerald-700 transition-all"
+            >
+              <ArrowLeft size={16} />
+              Torna a Ventilazione Naturale
+            </button>
+            <button 
+              onClick={() => setCurrentView('heat_stress')}
+              className="flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white rounded-lg text-sm font-bold hover:bg-emerald-700 transition-all"
+            >
+              Valutazione Rischio Stress Calore
+              <ArrowRight size={16} />
+            </button>
           </div>
         </div>
       </div>

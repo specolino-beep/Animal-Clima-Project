@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'motion/react';
-import { Wind, ArrowLeft, Ruler, Settings2 } from 'lucide-react';
+import { Wind, ArrowLeft, ArrowRight, Ruler, Settings2 } from 'lucide-react';
 import { InputCard, ResultCard } from './Common';
 import { NaturalVentParams, View } from '../types';
 import { 
@@ -228,6 +228,23 @@ export function VentilazioneNaturale({
             <li>In estate, l'effetto camino è trascurabile rispetto alla ventilazione forzata o trasversale</li>
             <li>Assicurarsi che le aperture d'ingresso siano almeno pari a quelle d'uscita</li>
           </ul>
+        </div>
+
+        <div className="flex justify-between items-center mt-8">
+          <button 
+            onClick={() => setCurrentView('results')}
+            className="flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white rounded-lg text-sm font-bold hover:bg-emerald-700 transition-all"
+          >
+            <ArrowLeft size={16} />
+            Torna al Bilancio
+          </button>
+          <button 
+            onClick={() => setCurrentView('forced_vent')}
+            className="flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white rounded-lg text-sm font-bold hover:bg-emerald-700 transition-all"
+          >
+            Vai a Ventilazione Forzata
+            <ArrowRight size={16} />
+          </button>
         </div>
       </div>
 

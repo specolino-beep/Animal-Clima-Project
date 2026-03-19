@@ -112,15 +112,15 @@ export function ConfigurazioneAnimali({
         </div>
       </section>
 
-     <div className="flex justify-end items-center pt-5">
-  <button 
-    onClick={() => setCurrentView('climate')}
-    className="flex items-center gap-1.5 bg-emerald-600 text-white px-5 py-2.5 rounded-xl font-semibold hover:bg-emerald-700 transition-colors text-sm group"
-  >
-    Vai all'inserimento dei dati climatici
-    <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
-  </button>
-</div>
+      <div className="flex justify-end items-center pt-5">
+        <button 
+          onClick={() => setCurrentView('climate')}
+          className="flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white rounded-lg text-sm font-bold hover:bg-emerald-700 transition-all"
+        >
+          Vai all'inserimento dei dati climatici
+          <ArrowRight size={16} />
+        </button>
+      </div>
     </motion.div>
   );
 }
